@@ -964,6 +964,8 @@ ui <- page_sidebar(
 {{< fa brands bluesky >}} [@grrrck.xyz](https://bsky.app/profile/grrrck.xyz)
 
 {{< fa home >}} [garrickadenbuie.com](https://garrickadenbuie.com)
+
+{{< fa brands github >}} [gadenbuie/brand-yml-posit-conf-2025](https://github.com/gadenbuie/brand-yml-posit-conf-2025)
 :::
 
 ![](images/brand-yml-tall-color.svg){.absolute bottom="125px" right="50px" width="400px" height="400px"}

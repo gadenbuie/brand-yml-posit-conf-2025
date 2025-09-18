@@ -10,7 +10,7 @@ format:
     width: 1280
     height: 720
     center-title-slide: false
-    css: slides.scss
+    theme: [brand, slides.scss]
 
 title-slide-attributes:
   data-background-image: images/pulse-talk-crowd.png

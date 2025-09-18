@@ -949,6 +949,13 @@ ui <- page_sidebar(
 )
 ````
 
+## 🤖 Write brand.yml with AI
+
+![](images/brand-yml-llms.png)
+
+::: footer
+[posit-dev.github.io/brand-yml/articles/llm-brand-yml-prompt](https://posit-dev.github.io/brand-yml/articles/llm-brand-yml-prompt/)
+:::
 
 # {background-image="images/pulse-aquarium.png" background-size="cover" background-transition="fade" transition-speed="slow"}
 

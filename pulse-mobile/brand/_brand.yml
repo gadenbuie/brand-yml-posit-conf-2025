@@ -1,0 +1,118 @@
+meta:
+  name:
+    short: Pulse Mobile
+    full: Pulse Mobile Telecommunications
+  link:
+    home: https://www.pulsemobile.com
+
+logo:
+  images:
+    # Full logomarks
+    full-color: logos/logomark-full-color.png
+    full-color-svg: logos/logomark-full-color.svg
+    full-black: logos/logomark-full-black.png
+    full-black-svg: logos/logomark-full-black.svg
+    full-white: logos/logomark-full-white.png
+    full-white-svg: logos/logomark-full-white.svg
+
+    # Medium logomarks
+    med-color: logos/logomark-med-color.png
+    med-color-svg: logos/logomark-med-color.svg
+    med-black: logos/logomark-med-black.png
+    med-black-svg: logos/logomark-med-black.svg
+    med-white: logos/logomark-med-white.png
+    med-white-svg: logos/logomark-med-white.svg
+
+    # Icons
+    icon-color: logos/icon-color.png
+    icon-color-svg: logos/icon-color.svg
+    icon-black: logos/icon-black.png
+    icon-black-svg: logos/icon-black.svg
+    icon-white: logos/icon-white.png
+    icon-white-svg: logos/icon-white.svg
+
+  small: icon-color
+  medium:
+    light: med-color
+    dark: med-white
+  large:
+    light: full-color
+    dark: full-white
+
+color:
+  palette:
+    white: "#FFFFFF"
+    black: "#121212"
+    midnight: "#121212"
+    cloud: "#f8f8f8"
+    pulse-purple: "#8a2be2"
+    electric-blue: "#00c2ff"
+    mint-green: "#4cd964"
+    sunrise-yellow: "#ffd600"
+    coral-red: "#ff5a5f"
+    cosmic-indigo: "#6610f2"
+    neon-pink: "#ff1493"
+    ocean-teal: "#20c997"
+    arctic-cyan: "#17dfef"
+
+    # Bootstrap color mappings
+    blue: electric-blue
+    purple: pulse-purple
+    green: mint-green
+    yellow: sunrise-yellow
+    red: coral-red
+    indigo: cosmic-indigo
+    pink: neon-pink
+    teal: ocean-teal
+    cyan: arctic-cyan
+
+  foreground: midnight
+  background: white
+  primary: pulse-purple
+  secondary: electric-blue
+  tertiary: mint-green
+  success: mint-green
+  info: electric-blue
+  warning: sunrise-yellow
+  danger: coral-red
+  light: cloud
+  dark: black
+
+
+typography:
+  fonts:
+    - family: Montserrat
+      source: google
+      weight: [400, 500, 600, 700]
+      style: [normal, italic]
+    - family: Montserrat Alternates
+      source: google
+      weight: [600, 700]
+      style: [normal]
+    - family: Space Mono
+      source: google
+      weight: [400, 700]
+      style: [normal, italic]
+
+  base:
+    family: Montserrat
+    weight: 400
+
+  headings:
+    family: Montserrat Alternates
+    weight: 600
+    line-height: 1.2
+    color: pulse-purple
+
+  monospace:
+    family: Space Mono
+    weight: 400
+
+  monospace-inline:
+    color: pulse-purple
+    background-color: space
+
+  link:
+    weight: 500
+    color: pulse-purple
+    # decoration: underline

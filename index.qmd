@@ -1,0 +1,969 @@
+---
+title: "Theming Made Easy: Introducing brand.yml"
+author: Garrick Aden-Buie
+institute: "posit:conf(2025)"
+
+format:
+  revealjs:
+    slide-number: false
+    slide-level: 2
+    width: 1280
+    height: 720
+    center-title-slide: false
+    css: slides.scss
+
+title-slide-attributes:
+  data-background-image: images/pulse-talk-crowd.png
+  data-background-size: cover
+  data-background-color: "#8a2be2"
+
+filters:
+  - tachyons
+
+brand:
+  typography:
+    fonts:
+      - family: Noto Sans
+        source: google
+      - family: Cabin
+        source: google
+      - family: IBM Plex Mono
+        source: google
+    base:
+      family: Noto Sans
+      size: 3rem
+    headings: Cabin
+
+  color:
+    palette:
+      black: "#1A1A1A"
+      white: "#F9F9F9"
+      orange: "#FF6F20"
+      purple: "#A500B5"
+      pink: "#FF3D7F"
+      green: "#28A745"
+      blue: "#007BFF"
+      yellow: "#FFC107"
+      red: "#DC3545"
+      indigo: "#6610f2"
+      teal: "#20c997"
+      cyan: "#17dfef"
+      gray-light: "#f0f0f0"
+      gray: "#454955"
+      gray-dark: "#343A40"
+    foreground: black
+    background: white
+    primary: orange
+    secondary: gray-dark
+    tertiary: gray
+    success: green
+    info: blue
+    warning: yellow
+    danger: pink
+    light: gray-light
+    dark: gray-dark
+---
+
+
+# [A long time ago...]{.text-white .r-fit-text} {.center #intro background-color="#4A98D3" transition="fade" transition-speed="slow"}
+
+::: {.fragment .text-white .text-center}
+(in 2019)
+:::
+
+::: {.fragment .text-white .text-center .r-fit-text}
+in a galaxy far, far away...
+:::
+
+::: {.fragment .text-white .text-center}
+(Austin, TX)
+:::
+
+## {background-image="images/rstudio-conf-2019-welcome.jpg" background-size="cover" transition="zoom" transition-speed="slow" background-transition="fade" background-color="black"}
+
+## {background-image="images/rstudio-conf-2019.png" background-size="cover" transition="zoom" transition-speed="slow" background-transition="zoom" background-color="black"}
+
+## {.center background-image="images/push-to-prod-welcome.png" background-size="cover" background-transition="concave"}
+
+::: {.center-vertical .mx-auto .h-100 .font-blocky .fragment .fade-up style="color:white; gap: 0.25em; width: 66%; margin-top: 10rem;"}
+::: r-fit-text
+Push straight to prod
+:::
+::: r-fit-text
+Jacqueline Nolis & Heather Nolis
+:::
+
+::: font-monospace
+rstudio::conf(2019)
+:::
+:::
+
+::: footer
+[posit.co](https://posit.co/resources/videos/push-straight-to-prod-api-development-with-r-and-tensorflow-at-tmobile/)
+:::
+
+## {background-image="images/push-to-prod-welcome.png" background-size="cover" background-color="black" background-opacity="0.33"}
+
+::: {.center-vertical .w-100 .h-100 .font-blocky style="gap: 0.5em"}
+::: {.r-fit-text .fragment fragment-index=1}
+We built this model
+:::
+::: {.r-fit-text .fragment .fade-up fragment-index=2}
+and we were [pretty]{.em style="color: var(--brand-orange)"}
+:::
+::: {.r-fit-text .fragment .fade-up fragment-index=2}
+[excited]{.em style="color: var(--brand-orange)"} about it...
+:::
+:::
+
+## {background-image="images/push-to-prod-welcome.png" background-size="cover" background-color="black" background-opacity="0.33"}
+
+::: {.center-vertical .w-100 .h-100 .font-blocky style="gap: 0.5em"}
+::: {.r-fit-text}
+But we'd go into business
+:::
+::: {.r-fit-text}
+meetings and be like guys,
+:::
+::: {.r-fit-text .fragment .fade-up style="color: var(--brand-yellow)"}
+look at these ROC curves!
+:::
+:::
+
+## {background-image="images/push-to-prod-welcome.png" background-size="cover" background-color="black" background-opacity="0.33"}
+
+::: {.center-vertical .w-100 .h-100}
+::: {.r-fit-text}
+And they're like...
+:::
+::: {.r-fit-text .fragment .fade-right .font-marker style="color:var(--brand-orange);"}
+_whatever_
+:::
+:::
+
+## {background-image="images/push-to-prod-welcome.png" background-size="cover" background-color="black" background-opacity="0.33"}
+
+::: {.center-vertical .w-100 .h-100 style="gap: 0.5em"}
+::: {.r-fit-text}
+So 10 minutes before one meeting
+:::
+::: {.r-fit-text}
+we're like, hey, let's just
+:::
+::: {.r-fit-text .fragment .fade-up style="color: var(--brand-cyan)"}
+make a [Shiny]{.font-marker} demo
+:::
+:::
+
+## {.center background-image="images/push-to-prod-app.png" background-size="cover"}
+
+::: {.center-vertical .w-100 .h-100 .fragment .fade-in style="gap: 0.5em; background: black;"}
+::: {.r-fit-text style="padding: 2rem; color: #FF2F79"}
+[and this]{style="color: #ccc"} changed the game
+:::
+:::
+
+## {background-image="images/push-to-prod-welcome.png" background-size="cover" background-color="black" background-opacity="0.33"}
+
+::: {.center-vertical .w-100 .h-100 style="gap: 0.5em"}
+::: {.r-fit-text}
+Our nice [Shiny]{.font-marker style="color: var(--brand-cyan)"} demo got us
+:::
+::: {.r-fit-text}
+_---and I am not exaggerating---_
+:::
+::: {.fragment .fade-up style="color: var(--brand-yellow)"}
+::: r-fit-text
+millions of dollars of funding
+:::
+::: r-fit-text
+& multiple new hires
+:::
+:::
+:::
+
+## {.center background-image="images/push-to-prod-app.png" background-size="cover"}
+
+## {background-image="images/push-to-prod-welcome.png" background-size="cover" background-color="black" background-opacity="0.33"}
+
+::: {.center-vertical .w-100 .h-100 style="gap: 0.5em"}
+::: {.r-fit-text}
+We spent an extra day
+:::
+::: {.r-fit-text}
+making the HTML look nicer
+to give us that
+:::
+::: {.r-fit-text .fragment .fade-up style="color: var(--brand-yellow)"}
+polished, professional look
+:::
+:::
+
+## {.center}
+
+![](images/app-basic.png){.br3 .ba .b--black-10 .db}
+
+## {.center-vertical .text-center auto-animate="true"}
+
+::: {.fragment .gradient-static-brand .font-marker style="font-size: 4em" .fade-left data-id="one-day"}
+&plus; one day
+:::
+::: {.fragment .gradient-static .font-marker style="font-size: 6em;" .fade-right}
+polished
+:::
+
+## {.center .text-center}
+
+![](images/tweet-slidecraft.png)
+
+## {background-image="images/garrick.png" background-size="contain"}
+
+## {background-image="images/garrick.png" background-size="200%" background-position="bottom left" transition="fade" transition-speed="slow"}
+
+## [ggpomological]{.hidden} {.center .text-center background-color="#464648ff"}
+
+![](images/ggpomological.png){.shadow-3}
+
+::: footer
+[garrickadenbuie.com/project/ggpomological](https://www.garrickadenbuie.com/project/ggpomological/)
+:::
+
+## [xaringanthemer]{.hidden} {.center .text-center}
+
+![](images/xaringan-themer-basic.png)
+
+::: fragment
+![](images/xaringan-themer-fun.png)
+:::
+
+::: footer
+[garrickadenbuie.com/project/xaringanthemer](https://www.garrickadenbuie.com/project/xaringanthemer/)
+:::
+
+## [usf-beamer]{.hidden} {.center .text-center}
+
+![](images/usf-beamer.png)
+
+## {.center .text-center background-image="images/grkmisc-theme-moffit.png" background-size="contain"}
+
+::: footer
+[grkmisc](https://gerkelab.github.io/grkmisc/reference/scale_moffitt.html)
+:::
+
+## {.center .text-center background-image="images/positthemes.png" background-size="contain"}
+
+
+## {.center .text-center}
+
+::: {.r-fit-text .font-blocky .gradient-static-brand}
+**polish matters**
+:::
+
+::: {.fragment .r-fit-text}
+tinkering [<<< **presenting**]{.fragment .fade-in}
+:::
+
+::: {.fragment .r-fit-text}
+write once[, **use everywhere**]{.fragment .fade-in}
+:::
+
+# {.center .text-center transition="convex" transition-speed="slow"}
+
+![](images/brand-yml-wide-color.svg)
+
+## {.center .text-center}
+
+::: {style="width: 800px; margin-inline: auto"}
+![](images/brand-yml-wide-color.svg){width=800px}
+:::
+
+::: {.fragment style="font-size: 1.5em"}
+brand guidelines &rarr; YAML
+:::
+
+
+## {.center .text-center background-image="images/pulse-dinner-party.png" background-size="cover" background-color="#8a2be2" transition="slide" transition-speed="slow"}
+
+::: {style="width: 60%; margin-inline: auto"}
+![](pulse-mobile/brand/logos/logomark-full-white.svg){width="100%"}
+:::
+
+## {.center .text-center background-image="images/pulse-data-scientists.png" background-size="cover" background-color="#8a2be2" transition="slide" transition-speed="slow"}
+
+## {.center .text-center background-image="images/pulse-data-scientists.png" background-size="cover" background-color="#451771ff" background-opacity="0.33" transition-speed="slow"}
+
+**Pulse AI Assistant**
+
+::: fragment
+_An AI-powered concierge that solves
+<br>
+problems
+before you even notice them._
+:::
+
+::: {.fragment .mt5}
+How much should we charge?
+:::
+
+## {background-image="images/pulse-app-basic.png" background-size="contain" background-transition="fade" transition-speed="slow"}
+
+## {background-image="images/pulse-app-basic-2.png" background-size="contain" background-transition="fade" transition-speed="slow"}
+
+## {background-image="images/pulse-app-basic-3.png" background-size="contain" background-transition="fade" transition-speed="slow"}
+
+## {.text-center}
+
+{{< pdf pulse-mobile/brand/guidelines/Pulse%20Mobile%20Brand%20Guidelines.pdf width=100% height=700px >}}
+
+## {.center auto-animate=true}
+
+::: {.font-monospace style="font-size: 1.6em"}
+::: {.fragment}
+meta:
+:::
+
+::: {.fragment}
+logo:
+:::
+
+::: {.fragment}
+typography:
+:::
+
+::: {.fragment}
+color:
+:::
+:::
+
+## {.center auto-animate=true}
+
+::: {.font-monospace style="font-size: 1.6em"}
+::: {style="color: var(--brand-purple)"}
+meta:
+:::
+
+::: {.black-40}
+logo:
+:::
+
+::: {.black-40}
+typography:
+:::
+
+::: {.black-40}
+color:
+:::
+:::
+
+## {.center}
+
+::: {style="--code-font-size: 2em"}
+```{.yaml code-line-numbers="1|2|3" filename="_brand.yml"}
+meta:
+  name: Pulse Mobile
+  link: https://www.pulsemobile.com
+```
+:::
+
+## {.center auto-animate="true"}
+
+::: {style="--code-font-size: 2em"}
+```{.yaml code-line-numbers="2-4" filename="_brand.yml"}
+meta:
+  name:
+    short: Pulse Mobile
+    full: Pulse Mobile Telecoms.
+  link: https://www.pulsemobile.com
+```
+:::
+
+## {.center auto-animate="true"}
+
+::: {style="--code-font-size: 1.5em"}
+```{.yaml code-line-numbers="5-6" filename="_brand.yml"}
+meta:
+  name:
+    short: Pulse Mobile
+    full: Pulse Mobile Telecoms.
+  link:
+    home: https://www.pulsemobile.com
+```
+:::
+
+## {.center auto-animate="true"}
+
+::: {style="--code-font-size: 1.5em"}
+```{.yaml code-line-numbers="7" filename="_brand.yml"}
+meta:
+  name:
+    short: Pulse Mobile
+    full: Pulse Mobile Telecoms.
+  link:
+    home: https://www.pulsemobile.com
+    bluesky: https://bsky.app/profile/pulsemobile
+```
+:::
+
+## {.center}
+
+::: {.font-monospace style="font-size: 1.6em"}
+::: {.black-40}
+meta: ✅
+:::
+
+::: {.black-40}
+logo:
+:::
+
+::: {.black-40}
+typography:
+:::
+
+::: {style="color: var(--brand-purple)"}
+color:
+:::
+:::
+
+## {background-image="pulse-mobile/brand/guidelines/images/pulse-brand.png" background-size="cover"}
+
+## {background-image="pulse-mobile/brand/guidelines/images/pulse-tag.png" background-size="cover"}
+
+## {background-image="pulse-mobile/brand/guidelines/images/pulse-colors.svg" background-size="90%"}
+
+## {.center auto-animate="true" background-image="pulse-mobile/brand/guidelines/images/pulse-colors.svg" background-size="90%" background-position="870px center"}
+
+::: {.w-75 style="--code-font-size: 1.5em"}
+```{.yaml code-line-numbers="1|2|2-3|2-5" filename="_brand.yml"}
+color:
+  palette:
+    pulse-purple: "#8a2be2"
+    electric-blue: "#00c2ff"
+    mint-green: "#4cd964"
+```
+:::
+
+## {.center auto-animate="true" background-image="pulse-mobile/brand/guidelines/images/pulse-colors.svg" background-size="90%" background-position="870px center"}
+
+::: {.w-75 style="--code-font-size: 1.5em"}
+```{.yaml code-line-numbers="3-4" filename="_brand.yml"}
+color:
+  palette:
+    pulse-purple: "#8a2be2"
+    purple: pulse-purple
+    electric-blue: "#00c2ff"
+    sunrise-yellow: "#ffd600"
+```
+:::
+
+## {.center auto-animate="true" background-image="pulse-mobile/brand/guidelines/images/pulse-colors.svg" background-size="90%" background-position="870px center"}
+
+::: {.w-75 style="--code-font-size: 1.5em"}
+```{.yaml code-line-numbers="3-5" filename="_brand.yml"}
+color:
+  palette:
+    purple: "#8a2be2"
+    blue: "#00c2ff"
+    yellow: "#ffd600"
+```
+:::
+
+## {.center auto-animate="true" background-image="pulse-mobile/brand/guidelines/images/pulse-colors.svg" background-size="90%" background-position="870px center"}
+
+::: {.w-75 style="--code-font-size: 1.5em"}
+```{.yaml code-line-numbers="3,7|4,8|5,9" filename="_brand.yml"}
+color:
+  palette:
+    purple: "#8a2be2"
+    blue: "#00c2ff"
+    yellow: "#ffd600"
+
+  primary: purple
+  secondary: blue
+  warning: yellow
+```
+:::
+
+## {.center auto-animate="true" background-image="pulse-mobile/brand/guidelines/images/pulse-colors.svg" background-size="90%" background-position="870px center"}
+
+::: {.w-75 style="--code-font-size: 1.5em"}
+```{.yaml code-line-numbers="" filename="_brand.yml"}
+color:
+  primary: "#8a2be2"
+  secondary: "#00c2ff"
+  warning: "#ffd600"
+```
+:::
+
+## {.center}
+
+::: {.font-monospace style="font-size: 1.6em"}
+::: {.black-40}
+meta: ✅
+:::
+
+::: {.black-40}
+logo:
+:::
+
+::: {style="color: var(--brand-purple)"}
+typography:
+:::
+
+::: {.black-40}
+color: ✅
+:::
+:::
+
+## {background-image="pulse-mobile/brand/guidelines/images/pulse-typography.svg" background-size="90%"}
+
+## {.center auto-animate="true"}
+
+::: {style="--code-font-size: 1.5em"}
+```{.yaml code-line-numbers="1|2|3-5" filename="_brand.yml"}
+typography:
+  fonts:
+    - family: Montserrat
+    - family: Montserrat Alternates
+    - family: Space Mono
+```
+:::
+
+## {.center auto-animate="true"}
+
+::: {style="--code-font-size: 1.5em"}
+```{.yaml code-line-numbers="4|6|8" filename="_brand.yml"}
+typography:
+  fonts:
+    - family: Montserrat
+      source: google
+    - family: Montserrat Alternates
+      source: bunny
+    - family: Space Mono
+      source: file
+```
+:::
+
+## {.center auto-animate="true"}
+
+::: {style="--code-font-size: 1.5em"}
+```{.yaml code-line-numbers="" filename="_brand.yml"}
+typography:
+  fonts:
+    - family: Montserrat
+      source: google
+    - family: Montserrat Alternates
+      source: google
+    - family: Space Mono
+      source: google
+```
+:::
+
+## {.center auto-animate="true"}
+
+::: {style="--code-font-size: 1.5em"}
+```{.yaml code-line-numbers="|3,9|5,10|7,11|10" filename="_brand.yml"}
+typography:
+  fonts:
+    - family: Montserrat
+      source: google
+    - family: Montserrat Alternates
+      source: google
+    - family: Space Mono
+      source: google
+  base: Montserrat
+  headings: Montserrat Alternates
+  monospace: Space Mono
+```
+:::
+
+## {.center auto-animate="true"}
+
+::: {style="--code-font-size: 1.5em"}
+```{.yaml code-line-numbers="10-11|10-12" filename="_brand.yml"}
+typography:
+  fonts:
+    - family: Montserrat
+      source: google
+    - family: Montserrat Alternates
+      source: google
+    - family: Space Mono
+      source: google
+  base: Montserrat
+  headings:
+    family: Montserrat Alternates
+    color: purple
+  monospace: Space Mono
+```
+:::
+
+## {.center auto-animate="true"}
+
+::: {style="--code-font-size: 1.5em"}
+```{.yaml code-line-numbers="8-10|1-3|3,10" filename="_brand.yml"}
+color:
+  palette:
+    purple: "#8a2be2"
+
+typography:
+  fonts: [...]
+  base: Montserrat
+  headings:
+    family: Montserrat Alternates
+    color: purple
+  monospace: Space Mono
+```
+:::
+
+## {.center}
+
+::: {.font-monospace style="font-size: 1.6em"}
+::: {.black-40}
+meta: ✅
+:::
+
+::: {style="color: var(--brand-purple)"}
+logo:
+:::
+
+::: {.black-40}
+typography: ✅
+:::
+
+::: {.black-40}
+color: ✅
+:::
+:::
+
+## {background-image="pulse-mobile/brand/guidelines/images/pulse-logo-1.svg" background-size="90%"}
+
+## {background-image="pulse-mobile/brand/guidelines/images/pulse-logo-2.svg" background-size="90%"}
+
+## {.center .text-center}
+
+![](images/pulse-brand-logos-finder.png)
+
+## {.center .scrollable auto-animate="true"}
+
+::: {style="--code-font-size: 1.5em"}
+```{.yaml code-line-numbers="1|1-2|" filename="_brand.yml"}
+logo:
+  images:
+    # Full logomarks
+    full-color: logos/logomark-full-color.png
+    full-color-svg: logos/logomark-full-color.svg
+    full-black: logos/logomark-full-black.png
+    full-black-svg: logos/logomark-full-black.svg
+    full-white: logos/logomark-full-white.png
+    full-white-svg: logos/logomark-full-white.svg
+
+    # Medium logomarks
+    med-color: logos/logomark-med-color.png
+    med-color-svg: logos/logomark-med-color.svg
+    med-black: logos/logomark-med-black.png
+    med-black-svg: logos/logomark-med-black.svg
+    med-white: logos/logomark-med-white.png
+    med-white-svg: logos/logomark-med-white.svg
+
+    # Icons
+    icon-color: logos/icon-color.png
+    icon-color-svg: logos/icon-color.svg
+    icon-black: logos/icon-black.png
+    icon-black-svg: logos/icon-black.svg
+    icon-white: logos/icon-white.png
+    icon-white-svg: logos/icon-white.svg
+```
+:::
+
+## {.center .scrollable auto-animate="true"}
+
+::: {style="--code-font-size: 1.5em"}
+```{.yaml code-line-numbers="1-7" filename="_brand.yml"}
+logo:
+  images:
+    full-color: logos/logomark-full-color.png
+    full-white: logos/logomark-full-white.png
+    med-color: logos/logomark-med-color.png
+    med-white: logos/logomark-med-white.png
+    icon-color: logos/icon-color.png
+```
+:::
+
+## {.center .scrollable auto-animate="true"}
+
+::: {style="--code-font-size: 1.5em"}
+```{.yaml code-line-numbers="8-10" filename="_brand.yml"}
+logo:
+  images:
+    full-color: logos/logomark-full-color.png
+    full-white: logos/logomark-full-white.png
+    med-color: logos/logomark-med-color.png
+    med-white: logos/logomark-med-white.png
+    icon-color: logos/icon-color.png
+  small:
+  medium:
+  large:
+```
+:::
+
+## {.center .scrollable auto-animate="true"}
+
+::: {style="--code-font-size: 1.5em"}
+```{.yaml code-line-numbers="7-8|5-6" filename="_brand.yml"}
+logo:
+  images:
+    full-color: logos/logomark-full-color.png
+    full-white: logos/logomark-full-white.png
+    med-color: logos/logomark-med-color.png
+    med-white: logos/logomark-med-white.png
+    icon-color: logos/icon-color.png
+  small: icon-color
+  medium:
+  large:
+```
+:::
+
+## {.center .scrollable auto-animate="true"}
+
+::: {style="--code-font-size: 1.5em"}
+```{.yaml code-line-numbers="5-6,9-11" filename="_brand.yml"}
+logo:
+  images:
+    full-color: logos/logomark-full-color.png
+    full-white: logos/logomark-full-white.png
+    med-color: logos/logomark-med-color.png
+    med-white: logos/logomark-med-white.png
+    icon-color: logos/icon-color.png
+  small: icon-color
+  medium:
+    light: med-color
+    dark: med-white
+  large:
+```
+:::
+
+## {.center .scrollable auto-animate="true"}
+
+::: {style="--code-font-size: 1.5em"}
+```{.yaml code-line-numbers="3-4,12-14" filename="_brand.yml"}
+logo:
+  images:
+    full-color: logos/logomark-full-color.png
+    full-white: logos/logomark-full-white.png
+    med-color: logos/logomark-med-color.png
+    med-white: logos/logomark-med-white.png
+    icon-color: logos/icon-color.png
+  small: icon-color
+  medium:
+    light: med-color
+    dark: med-white
+  large:
+    light: full-color
+    dark: full-white
+```
+:::
+
+## {background-image="images/pulse-app-basic.png" background-size="contain" background-transition="fade" transition-speed="slow"}
+
+## {background-image="images/pulse-app-branded-basic.png" background-size="contain" background-transition="fade" transition-speed="slow"}
+
+## {background-image="images/pulse-app-branded-full.png" background-size="contain" background-transition="fade" transition-speed="slow"}
+
+## {.center .text-center}
+
+::: {.r-fit-text .font-monospace}
+bslib.shinyapps.io/brand-yml
+:::
+
+## {background-image="images/brand-demo-app-edit.png" background-size="contain" background-transition="fade" transition-speed="slow"}
+
+## {background-image="images/brand-demo-app-in-out.png" background-size="contain" background-transition="fade" transition-speed="slow"}
+
+## {background-image="images/brand-demo-app-widgets.png" background-size="contain" background-transition="fade" transition-speed="slow"}
+
+## {background-image="images/brand-demo-app-color.png" background-size="contain" background-transition="fade" transition-speed="slow"}
+
+## {background-image="images/brand-demo-app-text.png" background-size="contain" background-transition="fade" transition-speed="slow"}
+
+# {background-image="images/pulse-office-celebration.png" background-size="cover" background-transition="fade" transition-speed="slow"}
+
+## {background-image="images/pulse-deflated.png" background-size="cover" background-transition="fade" transition-speed="slow"}
+
+## Quarto: HTML
+
+````{.markdown filename="report.qmd"}
+---
+title: "Pulse AI Assistant Performance Analysis"
+subtitle: "Cost Savings, Revenue Impact & Customer Adoption"
+author: "Data Science Team"
+date: 2025-09-18
+
+format: html
+---
+
+## Introduction and Business Context
+````
+
+::: {.fragment}
+```{.yaml filename="_brand.yml"}
+meta:
+  name: Pulse Mobile
+```
+:::
+
+## {background-image="images/report-unbranded.png" background-size="cover" background-transition="fade" transition-speed="slow"}
+
+## {background-video="images/report-branded.webm"}
+
+## {.text-center}
+
+{{< pdf pulse-mobile/eda-unbranded.pdf width=100% height=700px >}}
+
+```{=html}
+<style>
+[href$="pdf"] {
+    display: none;
+}
+</style>
+```
+
+## {.text-center}
+
+{{< pdf pulse-mobile/eda.pdf width=100% height=700px >}}
+
+## Quarto
+
+````{.markdown filename="report.qmd"}
+---
+title: "Pulse AI Assistant Performance Analysis"
+subtitle: "Cost Savings, Revenue Impact & Customer Adoption"
+author: "Data Science Team"
+date: 2025-09-18
+
+format: html
+---
+````
+
+```{.yaml filename="_brand.yml"}
+meta:
+  name: Pulse Mobile
+```
+
+## Quarto
+
+````{.markdown filename="report.qmd"}
+---
+title: "Pulse AI Assistant Performance Analysis"
+subtitle: "Cost Savings, Revenue Impact & Customer Adoption"
+author: "Data Science Team"
+date: 2025-09-18
+
+format: html
+
+brand: _brand.yml
+---
+````
+
+```{.yaml filename="_brand.yml"}
+meta:
+  name: Pulse Mobile
+```
+
+## Quarto
+
+````{.markdown filename="report.qmd"}
+---
+title: "Pulse AI Assistant Performance Analysis"
+subtitle: "Cost Savings, Revenue Impact & Customer Adoption"
+author: "Data Science Team"
+date: 2025-09-18
+
+format: html
+
+brand:
+  meta:
+    name: Pulse Mobile
+---
+````
+
+## Quarto
+
+````{.markdown filename="report.qmd"}
+---
+title: "Pulse AI Assistant Performance Analysis"
+subtitle: "Cost Savings, Revenue Impact & Customer Adoption"
+author: "Data Science Team"
+date: 2025-09-18
+
+format: html
+
+brand:
+  color:
+    primary: "#8a2be2"
+    secondary: "#00c2ff"
+    warning: "#ffd600"
+---
+````
+
+## Shiny
+
+````{.r filename="report.qmd"}
+library(shiny)
+library(bslib)
+
+ui <- page_sidebar(
+  theme = bs_theme()
+)
+````
+
+## Shiny
+
+````{.r filename="report.qmd"}
+library(shiny)
+library(bslib)
+
+ui <- page_sidebar(
+  theme = bs_theme(
+    brand = "_brand.yml"
+  )
+)
+````
+
+## Shiny
+
+````{.r filename="report.qmd"}
+library(shiny)
+library(bslib)
+
+ui <- page_sidebar(
+  theme = bs_theme(
+    brand = list(
+      color = list(
+        primary = "#8a2be2",
+        secondary = "#00c2ff",
+        warning = "#ffd600"
+      )
+    )
+  )
+)
+````
+
+
+# {background-image="images/pulse-aquarium.png" background-size="cover" background-transition="fade" transition-speed="slow"}
+
+# Learn more {.center}
+
+{{< fa book >}} [posit-dev.github.io/brand-yml](https://posit-dev.github.io/brand-yml/)
+
+{{< fa brands github >}} [posit-dev/brand-yml](https://github.com/posit-dev/brand-yml)
+
+{{< fa brands python >}} [brand-yml for Python](https://posit-dev.github.io/brand-yml/pkg/py/)
+
+{{< fa brands r-project >}} [brand.yml for R](https://posit-dev.github.io/brand-yml/pkg/r/)
+
+::: mt5
+{{< fa brands bluesky >}} [@grrrck.xyz](https://bsky.app/profile/grrrck.xyz)
+
+{{< fa home >}} [garrickadenbuie.com](https://garrickadenbuie.com)
+:::
+
+![](images/brand-yml-tall-color.svg){.absolute bottom="125px" right="50px" width="400px" height="400px"}

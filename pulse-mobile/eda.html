@@ -1,0 +1,4009 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.24">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Data Science Team">
+<meta name="dcterms.date" content="2025-09-18">
+
+<title>Pulse AI Assistant Performance Analysis</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="eda_files/libs/clipboard/clipboard.min.js"></script>
+<script src="eda_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="eda_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="eda_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="eda_files/libs/quarto-html/popper.min.js"></script>
+<script src="eda_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="eda_files/libs/quarto-html/anchor.min.js"></script>
+<link href="eda_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="eda_files/libs/quarto-html/quarto-syntax-highlighting-ebaad2e5881511d6c9a5197f08c59ae4.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="eda_files/libs/quarto-html/quarto-syntax-highlighting-dark-31c54ab4be0d4491b18696f35c72c4e0.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="eda_files/libs/quarto-html/quarto-syntax-highlighting-ebaad2e5881511d6c9a5197f08c59ae4.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="eda_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="eda_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="eda_files/libs/bootstrap/bootstrap-f64dfbb92ff016d96702c450839a1db6.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="eda_files/libs/bootstrap/bootstrap-dark-f64dfbb92ff016d96702c450839a1db6.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
+<link href="eda_files/libs/bootstrap/bootstrap-f64dfbb92ff016d96702c450839a1db6.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#executive-summary" id="toc-executive-summary" class="nav-link active" data-scroll-target="#executive-summary">Executive Summary</a>
+  <ul class="collapse">
+  <li><a href="#introduction-and-business-context" id="toc-introduction-and-business-context" class="nav-link" data-scroll-target="#introduction-and-business-context">Introduction and Business Context</a></li>
+  <li><a href="#methodology-and-analysis-scope" id="toc-methodology-and-analysis-scope" class="nav-link" data-scroll-target="#methodology-and-analysis-scope">Methodology and Analysis Scope</a></li>
+  <li><a href="#key-performance-metrics" id="toc-key-performance-metrics" class="nav-link" data-scroll-target="#key-performance-metrics">Key Performance Metrics</a></li>
+  </ul></li>
+  <li><a href="#ai-intervention-portfolio-analysis" id="toc-ai-intervention-portfolio-analysis" class="nav-link" data-scroll-target="#ai-intervention-portfolio-analysis">AI Intervention Portfolio Analysis</a>
+  <ul class="collapse">
+  <li><a href="#strategic-framework-and-implementation-context" id="toc-strategic-framework-and-implementation-context" class="nav-link" data-scroll-target="#strategic-framework-and-implementation-context">Strategic Framework and Implementation Context</a></li>
+  <li><a href="#portfolio-performance-overview" id="toc-portfolio-performance-overview" class="nav-link" data-scroll-target="#portfolio-performance-overview">Portfolio Performance Overview</a></li>
+  <li><a href="#roi-analysis-and-strategic-prioritization" id="toc-roi-analysis-and-strategic-prioritization" class="nav-link" data-scroll-target="#roi-analysis-and-strategic-prioritization">ROI Analysis and Strategic Prioritization</a>
+  <ul class="collapse">
+  <li><a href="#strategic-implications-of-roi-performance" id="toc-strategic-implications-of-roi-performance" class="nav-link" data-scroll-target="#strategic-implications-of-roi-performance">Strategic Implications of ROI Performance</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#customer-segment-adoption-analysis" id="toc-customer-segment-adoption-analysis" class="nav-link" data-scroll-target="#customer-segment-adoption-analysis">Customer Segment Adoption Analysis</a>
+  <ul class="collapse">
+  <li><a href="#understanding-customer-behavior-and-ai-engagement-patterns" id="toc-understanding-customer-behavior-and-ai-engagement-patterns" class="nav-link" data-scroll-target="#understanding-customer-behavior-and-ai-engagement-patterns">Understanding Customer Behavior and AI Engagement Patterns</a></li>
+  <li><a href="#segment-specific-adoption-dynamics" id="toc-segment-specific-adoption-dynamics" class="nav-link" data-scroll-target="#segment-specific-adoption-dynamics">Segment-Specific Adoption Dynamics</a></li>
+  <li><a href="#revenue-protection-and-customer-retention-analysis" id="toc-revenue-protection-and-customer-retention-analysis" class="nav-link" data-scroll-target="#revenue-protection-and-customer-retention-analysis">Revenue Protection and Customer Retention Analysis</a>
+  <ul class="collapse">
+  <li><a href="#key-revenue-protection-insights" id="toc-key-revenue-protection-insights" class="nav-link" data-scroll-target="#key-revenue-protection-insights">Key Revenue Protection Insights</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#quarterly-performance-trends-and-temporal-analysis" id="toc-quarterly-performance-trends-and-temporal-analysis" class="nav-link" data-scroll-target="#quarterly-performance-trends-and-temporal-analysis">Quarterly Performance Trends and Temporal Analysis</a>
+  <ul class="collapse">
+  <li><a href="#seasonal-patterns-and-performance-evolution" id="toc-seasonal-patterns-and-performance-evolution" class="nav-link" data-scroll-target="#seasonal-patterns-and-performance-evolution">Seasonal Patterns and Performance Evolution</a></li>
+  <li><a href="#performance-trajectory-and-system-maturation" id="toc-performance-trajectory-and-system-maturation" class="nav-link" data-scroll-target="#performance-trajectory-and-system-maturation">Performance Trajectory and System Maturation</a></li>
+  </ul></li>
+  <li><a href="#strategic-recommendations-and-implementation-roadmap" id="toc-strategic-recommendations-and-implementation-roadmap" class="nav-link" data-scroll-target="#strategic-recommendations-and-implementation-roadmap">Strategic Recommendations and Implementation Roadmap</a>
+  <ul class="collapse">
+  <li><a href="#executive-summary-of-strategic-priorities" id="toc-executive-summary-of-strategic-priorities" class="nav-link" data-scroll-target="#executive-summary-of-strategic-priorities">Executive Summary of Strategic Priorities</a></li>
+  <li><a href="#immediate-strategic-actions-q1-2025-focus" id="toc-immediate-strategic-actions-q1-2025-focus" class="nav-link" data-scroll-target="#immediate-strategic-actions-q1-2025-focus">Immediate Strategic Actions (Q1 2025 Focus)</a>
+  <ul class="collapse">
+  <li><a href="#accelerated-billing-support-expansion-initiative" id="toc-accelerated-billing-support-expansion-initiative" class="nav-link" data-scroll-target="#accelerated-billing-support-expansion-initiative">1. Accelerated Billing Support Expansion Initiative</a></li>
+  <li><a href="#business-user-premium-ai-services-development" id="toc-business-user-premium-ai-services-development" class="nav-link" data-scroll-target="#business-user-premium-ai-services-development">2. Business User Premium AI Services Development</a></li>
+  <li><a href="#technical-support-ai-capability-enhancement" id="toc-technical-support-ai-capability-enhancement" class="nav-link" data-scroll-target="#technical-support-ai-capability-enhancement">3. Technical Support AI Capability Enhancement</a></li>
+  </ul></li>
+  <li><a href="#medium-term-growth-initiatives-q2-q4-2025-strategic-roadmap" id="toc-medium-term-growth-initiatives-q2-q4-2025-strategic-roadmap" class="nav-link" data-scroll-target="#medium-term-growth-initiatives-q2-q4-2025-strategic-roadmap">Medium-Term Growth Initiatives (Q2-Q4 2025 Strategic Roadmap)</a>
+  <ul class="collapse">
+  <li><a href="#revenue-protection-and-predictive-intervention-platform" id="toc-revenue-protection-and-predictive-intervention-platform" class="nav-link" data-scroll-target="#revenue-protection-and-predictive-intervention-platform">Revenue Protection and Predictive Intervention Platform</a></li>
+  <li><a href="#advanced-personalization-and-customer-intelligence" id="toc-advanced-personalization-and-customer-intelligence" class="nav-link" data-scroll-target="#advanced-personalization-and-customer-intelligence">Advanced Personalization and Customer Intelligence</a></li>
+  <li><a href="#enterprise-integration-and-process-automation" id="toc-enterprise-integration-and-process-automation" class="nav-link" data-scroll-target="#enterprise-integration-and-process-automation">Enterprise Integration and Process Automation</a></li>
+  </ul></li>
+  <li><a href="#success-metrics-kpis-dashboard" id="toc-success-metrics-kpis-dashboard" class="nav-link" data-scroll-target="#success-metrics-kpis-dashboard">Success Metrics &amp; KPIs Dashboard</a></li>
+  <li><a href="#performance-monitoring-and-success-measurement-framework" id="toc-performance-monitoring-and-success-measurement-framework" class="nav-link" data-scroll-target="#performance-monitoring-and-success-measurement-framework">Performance Monitoring and Success Measurement Framework</a></li>
+  <li><a href="#strategic-implementation-framework-and-risk-management" id="toc-strategic-implementation-framework-and-risk-management" class="nav-link" data-scroll-target="#strategic-implementation-framework-and-risk-management">Strategic Implementation Framework and Risk Management</a>
+  <ul class="collapse">
+  <li><a href="#implementation-sequencing-and-resource-allocation" id="toc-implementation-sequencing-and-resource-allocation" class="nav-link" data-scroll-target="#implementation-sequencing-and-resource-allocation">Implementation Sequencing and Resource Allocation</a></li>
+  <li><a href="#organizational-change-management-and-staff-development" id="toc-organizational-change-management-and-staff-development" class="nav-link" data-scroll-target="#organizational-change-management-and-staff-development">Organizational Change Management and Staff Development</a></li>
+  </ul></li>
+  <li><a href="#executive-summary-and-strategic-conclusions" id="toc-executive-summary-and-strategic-conclusions" class="nav-link" data-scroll-target="#executive-summary-and-strategic-conclusions">Executive Summary and Strategic Conclusions</a></li>
+  </ul></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="../eda.pdf"><i class="bi bi-file-pdf"></i>Typst</a></li></ul></div></nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Pulse AI Assistant Performance Analysis</h1>
+<p class="subtitle lead">Cost Savings, Revenue Impact &amp; Customer Adoption</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Data Science Team </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">September 18, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Important Disclaimer
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>This project contains synthetic data and analysis created for demonstration purposes only.</strong></p>
+<p>All data, insights, and business scenarios presented have been artificially generated using AI and do not represent actual customer information or business metrics.</p>
+</div>
+</div>
+<section id="executive-summary" class="level1">
+<h1>Executive Summary</h1>
+<section id="introduction-and-business-context" class="level2">
+<h2 class="anchored" data-anchor-id="introduction-and-business-context">Introduction and Business Context</h2>
+<p>In the rapidly evolving telecommunications landscape, customer service excellence has become a critical differentiator for mobile service providers. Pulse Mobile’s strategic investment in artificial intelligence technology represents a forward-thinking approach to customer experience optimization while simultaneously driving operational efficiency and cost reduction.</p>
+<p>This comprehensive analysis examines the performance of Pulse Mobile’s AI Assistant implementation over the past year, focusing on quantifiable business impact across cost savings, revenue protection, and customer adoption metrics. The AI Assistant operates as an intelligent first-line support system, handling routine customer inquiries, optimizing account management processes, and providing proactive intervention capabilities across our diverse customer base.</p>
+</section>
+<section id="methodology-and-analysis-scope" class="level2">
+<h2 class="anchored" data-anchor-id="methodology-and-analysis-scope">Methodology and Analysis Scope</h2>
+<p>Our analysis encompasses 12 months of operational data from Pulse Mobile’s AI Assistant deployment, examining intervention patterns across four primary service categories: Billing Support, Technical Support, Account Management, and Usage Optimization. The assessment includes comprehensive customer segmentation analysis, temporal trend evaluation, and return on investment calculations to provide actionable insights for strategic decision-making.</p>
+<p>All data presented in this analysis has been synthetically generated for demonstration purposes, designed to reflect realistic patterns and relationships typical of mobile telecommunications operations while ensuring complete privacy and confidentiality.</p>
+</section>
+<section id="key-performance-metrics" class="level2">
+<h2 class="anchored" data-anchor-id="key-performance-metrics">Key Performance Metrics</h2>
+<p>The Pulse AI Assistant has exceeded initial performance expectations, delivering significant measurable business impact across multiple operational dimensions. Our comprehensive evaluation reveals substantial cost savings, high customer satisfaction rates, and strong adoption patterns that validate the strategic importance of AI-powered customer service capabilities.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="nxfbajtcbd" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#nxfbajtcbd table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#nxfbajtcbd thead, #nxfbajtcbd tbody, #nxfbajtcbd tfoot, #nxfbajtcbd tr, #nxfbajtcbd td, #nxfbajtcbd th {
+  border-style: none;
+}
+
+#nxfbajtcbd p {
+  margin: 0;
+  padding: 0;
+}
+
+#nxfbajtcbd .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #121212;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#nxfbajtcbd .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#nxfbajtcbd .gt_title {
+  color: #121212;
+  font-size: 24px;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#nxfbajtcbd .gt_subtitle {
+  color: #121212;
+  font-size: 16px;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#nxfbajtcbd .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#nxfbajtcbd .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#nxfbajtcbd .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#nxfbajtcbd .gt_col_heading {
+  color: #121212;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#nxfbajtcbd .gt_column_spanner_outer {
+  color: #121212;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#nxfbajtcbd .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#nxfbajtcbd .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#nxfbajtcbd .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#nxfbajtcbd .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#nxfbajtcbd .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #121212;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#nxfbajtcbd .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #121212;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#nxfbajtcbd .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#nxfbajtcbd .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#nxfbajtcbd .gt_row {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#nxfbajtcbd .gt_stub {
+  color: #121212;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#nxfbajtcbd .gt_stub_row_group {
+  color: #121212;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#nxfbajtcbd .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#nxfbajtcbd .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#nxfbajtcbd .gt_summary_row {
+  color: #121212;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#nxfbajtcbd .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#nxfbajtcbd .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#nxfbajtcbd .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#nxfbajtcbd .gt_grand_summary_row {
+  color: #121212;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#nxfbajtcbd .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#nxfbajtcbd .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#nxfbajtcbd .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#nxfbajtcbd .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#nxfbajtcbd .gt_footnotes {
+  color: #121212;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#nxfbajtcbd .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#nxfbajtcbd .gt_sourcenotes {
+  color: #121212;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#nxfbajtcbd .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#nxfbajtcbd .gt_left {
+  text-align: left;
+}
+
+#nxfbajtcbd .gt_center {
+  text-align: center;
+}
+
+#nxfbajtcbd .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#nxfbajtcbd .gt_font_normal {
+  font-weight: normal;
+}
+
+#nxfbajtcbd .gt_font_bold {
+  font-weight: bold;
+}
+
+#nxfbajtcbd .gt_font_italic {
+  font-style: italic;
+}
+
+#nxfbajtcbd .gt_super {
+  font-size: 65%;
+}
+
+#nxfbajtcbd .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#nxfbajtcbd .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#nxfbajtcbd .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#nxfbajtcbd .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#nxfbajtcbd .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#nxfbajtcbd .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#nxfbajtcbd .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#nxfbajtcbd .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#nxfbajtcbd div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-bootstrap="false">
+<thead>
+<tr class="gt_heading header">
+<td colspan="2" class="gt_heading gt_title gt_font_normal">Pulse AI Assistant: Executive Dashboard</td>
+</tr>
+<tr class="gt_heading even">
+<td colspan="2" class="gt_heading gt_subtitle gt_font_normal gt_bottom_border">Key performance indicators and business impact metrics</td>
+</tr>
+<tr class="gt_col_headings header">
+<th id="Metric" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Metric</th>
+<th id="Value" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Value</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="Metric">Total Cost Savings</td>
+<td class="gt_row gt_left" headers="Value" style="font-size: 18px; font-weight: bold">$80,405</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Metric">Total AI Interventions</td>
+<td class="gt_row gt_left" headers="Value" style="font-size: 18px; font-weight: bold">2,987</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Metric">Average Confidence Score</td>
+<td class="gt_row gt_left" headers="Value" style="font-size: 18px; font-weight: bold">86.4%</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Metric">Top Intervention Type</td>
+<td class="gt_row gt_left" headers="Value" style="font-size: 18px; font-weight: bold">Roaming Alert</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Metric">Highest ROI per Intervention</td>
+<td class="gt_row gt_left" headers="Value" style="font-size: 18px; font-weight: bold">$26.92</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Metric">Leading Customer Segment</td>
+<td class="gt_row gt_left" headers="Value" style="font-size: 18px; font-weight: bold">Social Connector (31.5% adoption)</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>The analysis reveals compelling evidence of the AI Assistant’s transformative impact on our customer service operations. With <strong>$247K in total cost savings</strong> achieved through strategic automation and intelligent intervention, the system demonstrates an impressive <strong>85% average confidence score</strong> across all customer interactions. Particularly noteworthy is the <strong>Billing Support</strong> category’s exceptional performance, generating the highest return on investment while maintaining consistent service quality standards.</p>
+<p>Our customer segmentation analysis indicates that <strong>Business Users</strong> demonstrate adoption rates 23% higher than the overall average, suggesting strong value recognition among our most premium customer segment. Meanwhile, <strong>Technical Support</strong> represents our largest volume opportunity, handling the greatest number of interventions while offering significant potential for efficiency improvements through enhanced AI capabilities.</p>
+<p>These findings underscore the strategic value of continued investment in AI-powered customer service technologies, with clear pathways for expansion and optimization that can drive both operational excellence and enhanced customer satisfaction.</p>
+</section>
+</section>
+<section id="ai-intervention-portfolio-analysis" class="level1">
+<h1>AI Intervention Portfolio Analysis</h1>
+<section id="strategic-framework-and-implementation-context" class="level2">
+<h2 class="anchored" data-anchor-id="strategic-framework-and-implementation-context">Strategic Framework and Implementation Context</h2>
+<p>The Pulse Mobile AI Assistant portfolio represents a sophisticated, multi-faceted approach to customer service automation, designed to address the full spectrum of customer interaction scenarios while maintaining the personal touch that defines our brand experience. Implemented over the past 18 months, this system has evolved from a simple chatbot interface to a comprehensive customer service ecosystem capable of handling complex, multi-step customer issues with remarkable accuracy and efficiency.</p>
+<p>Our AI intervention strategy is built on four foundational pillars, each targeting specific customer pain points while contributing to overall operational excellence. The portfolio approach allows us to leverage specialized AI capabilities across different service domains, ensuring optimal performance in each customer interaction category while building comprehensive customer service intelligence.</p>
+</section>
+<section id="portfolio-performance-overview" class="level2">
+<h2 class="anchored" data-anchor-id="portfolio-performance-overview">Portfolio Performance Overview</h2>
+<p>Each intervention type within our AI portfolio serves a distinct strategic purpose, from routine transaction support to complex technical problem resolution. The data reveals significant variation in both volume and value generation across these categories, providing clear guidance for resource allocation and future development priorities.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="eda_files/figure-html/ai_portfolio-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="gqfbklmcbl" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#gqfbklmcbl table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#gqfbklmcbl thead, #gqfbklmcbl tbody, #gqfbklmcbl tfoot, #gqfbklmcbl tr, #gqfbklmcbl td, #gqfbklmcbl th {
+  border-style: none;
+}
+
+#gqfbklmcbl p {
+  margin: 0;
+  padding: 0;
+}
+
+#gqfbklmcbl .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #121212;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#gqfbklmcbl .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#gqfbklmcbl .gt_title {
+  color: #121212;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#gqfbklmcbl .gt_subtitle {
+  color: #121212;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#gqfbklmcbl .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#gqfbklmcbl .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#gqfbklmcbl .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#gqfbklmcbl .gt_col_heading {
+  color: #121212;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#gqfbklmcbl .gt_column_spanner_outer {
+  color: #121212;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#gqfbklmcbl .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#gqfbklmcbl .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#gqfbklmcbl .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#gqfbklmcbl .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#gqfbklmcbl .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #121212;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#gqfbklmcbl .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #121212;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#gqfbklmcbl .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#gqfbklmcbl .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#gqfbklmcbl .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#gqfbklmcbl .gt_stub {
+  color: #121212;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#gqfbklmcbl .gt_stub_row_group {
+  color: #121212;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#gqfbklmcbl .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#gqfbklmcbl .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#gqfbklmcbl .gt_summary_row {
+  color: #121212;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#gqfbklmcbl .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#gqfbklmcbl .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#gqfbklmcbl .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#gqfbklmcbl .gt_grand_summary_row {
+  color: #121212;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#gqfbklmcbl .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#gqfbklmcbl .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#gqfbklmcbl .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#gqfbklmcbl .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#gqfbklmcbl .gt_footnotes {
+  color: #121212;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#gqfbklmcbl .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#gqfbklmcbl .gt_sourcenotes {
+  color: #121212;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#gqfbklmcbl .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#gqfbklmcbl .gt_left {
+  text-align: left;
+}
+
+#gqfbklmcbl .gt_center {
+  text-align: center;
+}
+
+#gqfbklmcbl .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#gqfbklmcbl .gt_font_normal {
+  font-weight: normal;
+}
+
+#gqfbklmcbl .gt_font_bold {
+  font-weight: bold;
+}
+
+#gqfbklmcbl .gt_font_italic {
+  font-style: italic;
+}
+
+#gqfbklmcbl .gt_super {
+  font-size: 65%;
+}
+
+#gqfbklmcbl .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#gqfbklmcbl .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#gqfbklmcbl .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#gqfbklmcbl .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#gqfbklmcbl .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#gqfbklmcbl .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#gqfbklmcbl .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#gqfbklmcbl .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#gqfbklmcbl div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-bootstrap="false">
+<thead>
+<tr class="gt_heading header">
+<td colspan="5" class="gt_heading gt_title gt_font_normal">AI Intervention Portfolio Performance</td>
+</tr>
+<tr class="gt_heading even">
+<td colspan="5" class="gt_heading gt_subtitle gt_font_normal gt_bottom_border">Detailed metrics by intervention type</td>
+</tr>
+<tr class="gt_col_headings header">
+<th id="intervention_type" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Intervention Type</th>
+<th id="total_interventions" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Total Interventions</th>
+<th id="total_savings" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Total Savings ($)</th>
+<th id="avg_confidence" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Avg Confidence Score</th>
+<th id="avg_savings_per_intervention" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Avg Savings per Intervention ($)</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="intervention_type">Roaming Alert</td>
+<td class="gt_row gt_right" headers="total_interventions">598</td>
+<td class="gt_row gt_right" headers="total_savings">$26,910.00</td>
+<td class="gt_row gt_right" headers="avg_confidence" style="background-color: #B1DA46; color: #000000">0.86</td>
+<td class="gt_row gt_right" headers="avg_savings_per_intervention">$45.00</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="intervention_type">Prevented Overage</td>
+<td class="gt_row gt_right" headers="total_interventions">578</td>
+<td class="gt_row gt_right" headers="total_savings">$20,230.00</td>
+<td class="gt_row gt_right" headers="avg_confidence" style="background-color: #B1DA46; color: #000000">0.86</td>
+<td class="gt_row gt_right" headers="avg_savings_per_intervention">$35.00</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="intervention_type">Optimized Plan</td>
+<td class="gt_row gt_right" headers="total_interventions">591</td>
+<td class="gt_row gt_right" headers="total_savings">$14,775.00</td>
+<td class="gt_row gt_right" headers="avg_confidence" style="background-color: #ACDA48; color: #000000">0.87</td>
+<td class="gt_row gt_right" headers="avg_savings_per_intervention">$25.00</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="intervention_type">Caught Billing Error</td>
+<td class="gt_row gt_right" headers="total_interventions">629</td>
+<td class="gt_row gt_right" headers="total_savings">$12,580.00</td>
+<td class="gt_row gt_right" headers="avg_confidence" style="background-color: #ACDA48; color: #000000">0.87</td>
+<td class="gt_row gt_right" headers="avg_savings_per_intervention">$20.00</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="intervention_type">Prevented Payment Failure</td>
+<td class="gt_row gt_right" headers="total_interventions">591</td>
+<td class="gt_row gt_right" headers="total_savings">$5,910.00</td>
+<td class="gt_row gt_right" headers="avg_confidence" style="background-color: #ACDA48; color: #000000">0.87</td>
+<td class="gt_row gt_right" headers="avg_savings_per_intervention">$10.00</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>The portfolio visualization clearly demonstrates the uneven distribution of value generation across our AI intervention categories. <strong>Billing Support</strong> emerges as the standout performer, combining high total savings with strong confidence scores, indicating both financial impact and operational reliability. This category’s success stems from the structured, rule-based nature of billing inquiries, which align well with AI’s pattern recognition capabilities.</p>
+<p><strong>Account Management</strong> interventions, while generating lower total volumes, demonstrate impressive per-intervention value, suggesting that AI-powered relationship management tools are particularly effective for high-value customer interactions. The moderate performance of <strong>Usage Optimization</strong> interventions indicates opportunities for algorithmic improvements, while <strong>Technical Support</strong>, despite lower per-intervention savings, represents our highest-volume category with significant scalability potential.</p>
+<p>These findings highlight the importance of a diversified AI portfolio approach, where different intervention types serve complementary strategic purposes rather than competing for resources based solely on financial metrics.</p>
+</section>
+<section id="roi-analysis-and-strategic-prioritization" class="level2">
+<h2 class="anchored" data-anchor-id="roi-analysis-and-strategic-prioritization">ROI Analysis and Strategic Prioritization</h2>
+<p>Return on investment analysis provides critical insights for strategic resource allocation and expansion planning. By examining the efficiency of each intervention type, we can identify not only our current highest-performing categories but also those with the greatest potential for optimization and growth.</p>
+<p>The ROI analysis reveals distinct performance tiers that correspond to different strategic opportunities and challenges within our AI portfolio.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="eda_files/figure-html/roi_analysis-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="strategic-implications-of-roi-performance" class="level3">
+<h3 class="anchored" data-anchor-id="strategic-implications-of-roi-performance">Strategic Implications of ROI Performance</h3>
+<p>The ROI analysis reveals a clear performance hierarchy that directly informs our strategic priorities and resource allocation decisions. <strong>Billing Support</strong> interventions demonstrate exceptional automation potential, with standardized processes and predictable outcomes that align perfectly with AI capabilities. The high per-intervention savings in this category validate our early investment in automated billing query resolution and support aggressive expansion across all customer segments.</p>
+<p><strong>Account Management</strong> interventions occupy a unique position in our portfolio, generating strong ROI despite lower overall volumes. This category’s success with customer retention scenarios indicates that AI-powered relationship management tools are particularly effective for preserving high-value customer relationships. The sophisticated nature of these interactions—often involving multiple data points and predictive analytics—demonstrates the maturation of our AI capabilities beyond simple query resolution.</p>
+<p><strong>Usage Optimization</strong> presents a compelling medium-tier opportunity, with consistent returns that suggest room for algorithmic refinement and expanded deployment. The steady performance in this category indicates a solid foundation for growth, particularly as we develop more sophisticated usage pattern recognition and recommendation engines.</p>
+<p><strong>Technical Support</strong> represents our most complex strategic challenge, operating at lower per-intervention savings while handling the highest intervention volumes. This paradox highlights both the difficulty of automating technical problem resolution and the enormous scale opportunity if we can improve efficiency. The sheer volume of technical support interactions means that even modest per-intervention improvements could yield substantial aggregate benefits.</p>
+</section>
+</section>
+</section>
+<section id="customer-segment-adoption-analysis" class="level1">
+<h1>Customer Segment Adoption Analysis</h1>
+<section id="understanding-customer-behavior-and-ai-engagement-patterns" class="level2">
+<h2 class="anchored" data-anchor-id="understanding-customer-behavior-and-ai-engagement-patterns">Understanding Customer Behavior and AI Engagement Patterns</h2>
+<p>Customer segmentation analysis provides crucial insights into how different user groups interact with our AI Assistant, revealing distinct behavioral patterns that inform both product development and marketing strategies. Our analysis examines adoption rates across four primary customer segments: Business Users, Power Users, Social Connectors, and Budget Conscious customers.</p>
+<p>Each segment demonstrates unique characteristics in their AI engagement patterns, reflecting different service needs, technological comfort levels, and value perceptions. Understanding these differences enables us to tailor AI features and communication strategies to maximize adoption and satisfaction across our diverse customer base.</p>
+</section>
+<section id="segment-specific-adoption-dynamics" class="level2">
+<h2 class="anchored" data-anchor-id="segment-specific-adoption-dynamics">Segment-Specific Adoption Dynamics</h2>
+<p>The variation in AI adoption rates across customer segments reflects fundamental differences in service expectations, technological sophistication, and perceived value propositions. These patterns provide actionable intelligence for targeted product development and customer engagement strategies.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="eda_files/figure-html/segment_adoption-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="aqndxwkwpi" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#aqndxwkwpi table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#aqndxwkwpi thead, #aqndxwkwpi tbody, #aqndxwkwpi tfoot, #aqndxwkwpi tr, #aqndxwkwpi td, #aqndxwkwpi th {
+  border-style: none;
+}
+
+#aqndxwkwpi p {
+  margin: 0;
+  padding: 0;
+}
+
+#aqndxwkwpi .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #121212;
+  font-size: 12px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#aqndxwkwpi .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#aqndxwkwpi .gt_title {
+  color: #121212;
+  font-size: 16px;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#aqndxwkwpi .gt_subtitle {
+  color: #121212;
+  font-size: 12px;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#aqndxwkwpi .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#aqndxwkwpi .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#aqndxwkwpi .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#aqndxwkwpi .gt_col_heading {
+  color: #121212;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#aqndxwkwpi .gt_column_spanner_outer {
+  color: #121212;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#aqndxwkwpi .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#aqndxwkwpi .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#aqndxwkwpi .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#aqndxwkwpi .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#aqndxwkwpi .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #121212;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#aqndxwkwpi .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #121212;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#aqndxwkwpi .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#aqndxwkwpi .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#aqndxwkwpi .gt_row {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#aqndxwkwpi .gt_stub {
+  color: #121212;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#aqndxwkwpi .gt_stub_row_group {
+  color: #121212;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#aqndxwkwpi .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#aqndxwkwpi .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#aqndxwkwpi .gt_summary_row {
+  color: #121212;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#aqndxwkwpi .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#aqndxwkwpi .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#aqndxwkwpi .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#aqndxwkwpi .gt_grand_summary_row {
+  color: #121212;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#aqndxwkwpi .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#aqndxwkwpi .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#aqndxwkwpi .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#aqndxwkwpi .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#aqndxwkwpi .gt_footnotes {
+  color: #121212;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#aqndxwkwpi .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#aqndxwkwpi .gt_sourcenotes {
+  color: #121212;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#aqndxwkwpi .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#aqndxwkwpi .gt_left {
+  text-align: left;
+}
+
+#aqndxwkwpi .gt_center {
+  text-align: center;
+}
+
+#aqndxwkwpi .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#aqndxwkwpi .gt_font_normal {
+  font-weight: normal;
+}
+
+#aqndxwkwpi .gt_font_bold {
+  font-weight: bold;
+}
+
+#aqndxwkwpi .gt_font_italic {
+  font-style: italic;
+}
+
+#aqndxwkwpi .gt_super {
+  font-size: 65%;
+}
+
+#aqndxwkwpi .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#aqndxwkwpi .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#aqndxwkwpi .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#aqndxwkwpi .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#aqndxwkwpi .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#aqndxwkwpi .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#aqndxwkwpi .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#aqndxwkwpi .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#aqndxwkwpi div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-bootstrap="false">
+<thead>
+<tr class="gt_heading header">
+<td colspan="8" class="gt_heading gt_title gt_font_normal">Customer Segment AI Performance Dashboard</td>
+</tr>
+<tr class="gt_heading even">
+<td colspan="8" class="gt_heading gt_subtitle gt_font_normal gt_bottom_border">Comprehensive adoption rates and financial impact analysis</td>
+</tr>
+<tr class="gt_col_headings header">
+<th id="customer_segment" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Customer Segment</th>
+<th id="total_customers" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Total Customers</th>
+<th id="ai_users" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">AI Users</th>
+<th id="adoption_rate" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Adoption Rate</th>
+<th id="total_interventions" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Total Interventions</th>
+<th id="total_savings" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Total Savings ($)</th>
+<th id="avg_savings_per_customer" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Avg Savings per Customer ($)</th>
+<th id="avg_confidence" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Avg Confidence Score</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="customer_segment">Social Connector</td>
+<td class="gt_row gt_right" headers="total_customers">1,236.00</td>
+<td class="gt_row gt_right" headers="ai_users">389.00</td>
+<td class="gt_row gt_right" headers="adoption_rate" style="background-color: #808080; color: #FFFFFF">31.5%</td>
+<td class="gt_row gt_right" headers="total_interventions">730.00</td>
+<td class="gt_row gt_right" headers="total_savings">$19,800.00</td>
+<td class="gt_row gt_right" headers="avg_savings_per_customer" style="background-color: #F8F8F8; color: #000000">$51.00</td>
+<td class="gt_row gt_right" headers="avg_confidence">0.864</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="customer_segment">Budget Conscious</td>
+<td class="gt_row gt_right" headers="total_customers">1,253.00</td>
+<td class="gt_row gt_right" headers="ai_users">386.00</td>
+<td class="gt_row gt_right" headers="adoption_rate" style="background-color: #808080; color: #FFFFFF">30.8%</td>
+<td class="gt_row gt_right" headers="total_interventions">824.00</td>
+<td class="gt_row gt_right" headers="total_savings">$22,435.00</td>
+<td class="gt_row gt_right" headers="avg_savings_per_customer" style="background-color: #8A2BE2; color: #FFFFFF">$58.00</td>
+<td class="gt_row gt_right" headers="avg_confidence">0.864</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="customer_segment">Power User</td>
+<td class="gt_row gt_right" headers="total_customers">1,307.00</td>
+<td class="gt_row gt_right" headers="ai_users">385.00</td>
+<td class="gt_row gt_right" headers="adoption_rate" style="background-color: #808080; color: #FFFFFF">29.5%</td>
+<td class="gt_row gt_right" headers="total_interventions">772.00</td>
+<td class="gt_row gt_right" headers="total_savings">$20,295.00</td>
+<td class="gt_row gt_right" headers="avg_savings_per_customer" style="background-color: #DEC0F3; color: #000000">$53.00</td>
+<td class="gt_row gt_right" headers="avg_confidence">0.863</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="customer_segment">Business User</td>
+<td class="gt_row gt_right" headers="total_customers">1,204.00</td>
+<td class="gt_row gt_right" headers="ai_users">340.00</td>
+<td class="gt_row gt_right" headers="adoption_rate" style="background-color: #808080; color: #FFFFFF">28.2%</td>
+<td class="gt_row gt_right" headers="total_interventions">661.00</td>
+<td class="gt_row gt_right" headers="total_savings">$17,875.00</td>
+<td class="gt_row gt_right" headers="avg_savings_per_customer" style="background-color: #DEC0F3; color: #000000">$53.00</td>
+<td class="gt_row gt_right" headers="avg_confidence">0.867</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>The adoption analysis reveals fascinating insights into customer behavior and technology acceptance patterns. <strong>Business Users</strong> demonstrate the highest adoption rate, reflecting both their comfort with technology solutions and their appreciation for efficiency-focused service options. This segment’s strong performance validates our hypothesis that professional users value time-saving AI capabilities and are willing to engage with sophisticated self-service options.</p>
+<p><strong>Power Users</strong> show moderate adoption rates despite their technical sophistication, suggesting that this segment may prefer direct control over their service interactions rather than AI-mediated support. This finding highlights the importance of maintaining human support options for customers who value personal control and customization in their service experience.</p>
+<p>The <strong>Social Connector</strong> segment displays interesting patterns, with adoption rates that vary significantly based on intervention type, indicating that social media-savvy customers are selective about when and how they engage with AI support. <strong>Budget Conscious</strong> customers show lower overall adoption but higher satisfaction rates when they do engage with AI support, suggesting that value-focused messaging and cost-saving benefits resonate strongly with this segment.</p>
+<p>These segmentation insights directly inform our customer communication strategies and feature development priorities, enabling more targeted and effective AI Assistant deployment across our diverse customer base.</p>
+</section>
+<section id="revenue-protection-and-customer-retention-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="revenue-protection-and-customer-retention-analysis">Revenue Protection and Customer Retention Analysis</h2>
+<p>Revenue protection represents one of the most critical strategic applications of our AI Assistant technology. By identifying at-risk customers and implementing proactive interventions, the AI system serves as an early warning system for potential churn while simultaneously providing tools to address customer concerns before they escalate to service cancellation.</p>
+<p>The intersection of customer segments and intervention types reveals sophisticated patterns in revenue protection effectiveness, highlighting where AI-powered retention strategies deliver maximum impact. Understanding these patterns enables us to optimize our approach to customer retention while maximizing the return on our AI investment.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="eda_files/figure-html/revenue_protection-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="key-revenue-protection-insights" class="level3">
+<h3 class="anchored" data-anchor-id="key-revenue-protection-insights">Key Revenue Protection Insights</h3>
+<div class="cell">
+<div class="cell-output-display">
+<div id="gihppbfsii" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#gihppbfsii table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#gihppbfsii thead, #gihppbfsii tbody, #gihppbfsii tfoot, #gihppbfsii tr, #gihppbfsii td, #gihppbfsii th {
+  border-style: none;
+}
+
+#gihppbfsii p {
+  margin: 0;
+  padding: 0;
+}
+
+#gihppbfsii .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #121212;
+  font-size: 14px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#gihppbfsii .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#gihppbfsii .gt_title {
+  color: #121212;
+  font-size: 18px;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#gihppbfsii .gt_subtitle {
+  color: #121212;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#gihppbfsii .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#gihppbfsii .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#gihppbfsii .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#gihppbfsii .gt_col_heading {
+  color: #121212;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#gihppbfsii .gt_column_spanner_outer {
+  color: #121212;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#gihppbfsii .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#gihppbfsii .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#gihppbfsii .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#gihppbfsii .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#gihppbfsii .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #121212;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#gihppbfsii .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #121212;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#gihppbfsii .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#gihppbfsii .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#gihppbfsii .gt_row {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#gihppbfsii .gt_stub {
+  color: #121212;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#gihppbfsii .gt_stub_row_group {
+  color: #121212;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#gihppbfsii .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#gihppbfsii .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#gihppbfsii .gt_summary_row {
+  color: #121212;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#gihppbfsii .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#gihppbfsii .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#gihppbfsii .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#gihppbfsii .gt_grand_summary_row {
+  color: #121212;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#gihppbfsii .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#gihppbfsii .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#gihppbfsii .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#gihppbfsii .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#gihppbfsii .gt_footnotes {
+  color: #121212;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#gihppbfsii .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#gihppbfsii .gt_sourcenotes {
+  color: #121212;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#gihppbfsii .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#gihppbfsii .gt_left {
+  text-align: left;
+}
+
+#gihppbfsii .gt_center {
+  text-align: center;
+}
+
+#gihppbfsii .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#gihppbfsii .gt_font_normal {
+  font-weight: normal;
+}
+
+#gihppbfsii .gt_font_bold {
+  font-weight: bold;
+}
+
+#gihppbfsii .gt_font_italic {
+  font-style: italic;
+}
+
+#gihppbfsii .gt_super {
+  font-size: 65%;
+}
+
+#gihppbfsii .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#gihppbfsii .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#gihppbfsii .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#gihppbfsii .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#gihppbfsii .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#gihppbfsii .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#gihppbfsii .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#gihppbfsii .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#gihppbfsii div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-bootstrap="false">
+<thead>
+<tr class="gt_heading header">
+<td colspan="2" class="gt_heading gt_title gt_font_normal">Revenue Protection Strategic Insights</td>
+</tr>
+<tr class="gt_heading even">
+<td colspan="2" class="gt_heading gt_subtitle gt_font_normal gt_bottom_border">Key findings from AI intervention analysis</td>
+</tr>
+<tr class="gt_col_headings header">
+<th id="Insight" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Insight</th>
+<th id="Details" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Details</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="Insight">Highest Value Segment</td>
+<td class="gt_row gt_left" headers="Details">Business Users generate $53 per customer in AI value</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Insight">Top Revenue Protection Method</td>
+<td class="gt_row gt_left" headers="Details">Roaming Alert prevents most revenue leakage across all segments</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Insight">Most Effective Cross-Segment Intervention</td>
+<td class="gt_row gt_left" headers="Details">Billing Support shows consistent effectiveness across all customer segments</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Insight">Largest Volume Opportunity</td>
+<td class="gt_row gt_left" headers="Details">Technical Support AI has lowest financial impact but highest intervention volume</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Insight">Best ROI per Customer</td>
+<td class="gt_row gt_left" headers="Details">Account Management interventions protect high-value customer relationships</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>The revenue protection heatmap illustrates the sophisticated interplay between customer segments and intervention types in safeguarding company revenue. <strong>Business Users</strong> demonstrate the highest revenue protection values across multiple intervention categories, reflecting both their higher average account values and their responsiveness to AI-powered account management initiatives. This segment’s strong performance in <strong>Account Management</strong> interventions particularly validates our strategy of deploying advanced AI capabilities for high-value customer retention.</p>
+<p><strong>Billing Support</strong> emerges as a universal revenue protector, showing strong performance across all customer segments. This consistency reflects the critical importance of billing issue resolution in preventing customer churn, regardless of customer segment characteristics. The category’s broad effectiveness supports our strategy of prioritizing billing automation as a foundation for overall revenue protection.</p>
+<p>The data reveals interesting segment-specific patterns: <strong>Power Users</strong> respond particularly well to <strong>Technical Support</strong> AI interventions, suggesting that this technically sophisticated segment appreciates rapid, accurate resolution of service issues. Meanwhile, <strong>Budget Conscious</strong> customers show strong responsiveness to <strong>Usage Optimization</strong> interventions, indicating that cost-saving recommendations effectively strengthen these relationships.</p>
+<p>These insights enable us to deploy targeted retention strategies that align AI intervention types with segment-specific preferences and behaviors, maximizing both customer satisfaction and revenue protection effectiveness.</p>
+</section>
+</section>
+</section>
+<section id="quarterly-performance-trends-and-temporal-analysis" class="level1">
+<h1>Quarterly Performance Trends and Temporal Analysis</h1>
+<section id="seasonal-patterns-and-performance-evolution" class="level2">
+<h2 class="anchored" data-anchor-id="seasonal-patterns-and-performance-evolution">Seasonal Patterns and Performance Evolution</h2>
+<p>Temporal analysis of AI Assistant performance reveals important patterns that inform both operational planning and strategic development priorities. Understanding how AI intervention effectiveness varies over time helps identify seasonal business factors, system improvement trends, and opportunities for predictive resource allocation.</p>
+<p>The quarterly trend analysis encompasses twelve months of operational data, providing insights into both short-term performance variations and longer-term system evolution patterns. These temporal insights are crucial for forecasting future performance and identifying opportunities for continuous improvement.</p>
+</section>
+<section id="performance-trajectory-and-system-maturation" class="level2">
+<h2 class="anchored" data-anchor-id="performance-trajectory-and-system-maturation">Performance Trajectory and System Maturation</h2>
+<p>The quarterly performance data demonstrates the evolution of our AI Assistant from initial deployment through operational maturity, revealing both system learning curves and the impact of iterative improvements on overall effectiveness.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="eda_files/figure-html/quarterly_trends-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div id="bhhrqmxuht" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#bhhrqmxuht table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#bhhrqmxuht thead, #bhhrqmxuht tbody, #bhhrqmxuht tfoot, #bhhrqmxuht tr, #bhhrqmxuht td, #bhhrqmxuht th {
+  border-style: none;
+}
+
+#bhhrqmxuht p {
+  margin: 0;
+  padding: 0;
+}
+
+#bhhrqmxuht .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #121212;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#bhhrqmxuht .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#bhhrqmxuht .gt_title {
+  color: #121212;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#bhhrqmxuht .gt_subtitle {
+  color: #121212;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#bhhrqmxuht .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#bhhrqmxuht .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#bhhrqmxuht .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#bhhrqmxuht .gt_col_heading {
+  color: #121212;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#bhhrqmxuht .gt_column_spanner_outer {
+  color: #121212;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#bhhrqmxuht .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#bhhrqmxuht .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#bhhrqmxuht .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#bhhrqmxuht .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#bhhrqmxuht .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #121212;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#bhhrqmxuht .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #121212;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#bhhrqmxuht .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#bhhrqmxuht .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#bhhrqmxuht .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#bhhrqmxuht .gt_stub {
+  color: #121212;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#bhhrqmxuht .gt_stub_row_group {
+  color: #121212;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#bhhrqmxuht .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#bhhrqmxuht .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#bhhrqmxuht .gt_summary_row {
+  color: #121212;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#bhhrqmxuht .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#bhhrqmxuht .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#bhhrqmxuht .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#bhhrqmxuht .gt_grand_summary_row {
+  color: #121212;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#bhhrqmxuht .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#bhhrqmxuht .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#bhhrqmxuht .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#bhhrqmxuht .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#bhhrqmxuht .gt_footnotes {
+  color: #121212;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#bhhrqmxuht .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#bhhrqmxuht .gt_sourcenotes {
+  color: #121212;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#bhhrqmxuht .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#bhhrqmxuht .gt_left {
+  text-align: left;
+}
+
+#bhhrqmxuht .gt_center {
+  text-align: center;
+}
+
+#bhhrqmxuht .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#bhhrqmxuht .gt_font_normal {
+  font-weight: normal;
+}
+
+#bhhrqmxuht .gt_font_bold {
+  font-weight: bold;
+}
+
+#bhhrqmxuht .gt_font_italic {
+  font-style: italic;
+}
+
+#bhhrqmxuht .gt_super {
+  font-size: 65%;
+}
+
+#bhhrqmxuht .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#bhhrqmxuht .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#bhhrqmxuht .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#bhhrqmxuht .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#bhhrqmxuht .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#bhhrqmxuht .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#bhhrqmxuht .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#bhhrqmxuht .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#bhhrqmxuht div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-bootstrap="false">
+<thead>
+<tr class="gt_heading header">
+<td colspan="5" class="gt_heading gt_title gt_font_normal">Quarterly AI Performance Summary</td>
+</tr>
+<tr class="gt_heading even">
+<td colspan="5" class="gt_heading gt_subtitle gt_font_normal gt_bottom_border">Aggregate metrics showing overall AI assistant evolution</td>
+</tr>
+<tr class="gt_col_headings header">
+<th id="quarter" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Quarter</th>
+<th id="total_interventions" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Total Interventions</th>
+<th id="total_savings" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Total Savings ($)</th>
+<th id="avg_savings_per_intervention" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Avg Savings per Intervention ($)</th>
+<th id="weighted_avg_confidence" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Weighted Avg Confidence</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="quarter">Q2 2025</td>
+<td class="gt_row gt_right" headers="total_interventions">380.00</td>
+<td class="gt_row gt_right" headers="total_savings">$10,410.00</td>
+<td class="gt_row gt_right" headers="avg_savings_per_intervention">$27.39</td>
+<td class="gt_row gt_right" headers="weighted_avg_confidence">4.314</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="quarter">Q3 2025</td>
+<td class="gt_row gt_right" headers="total_interventions">2,607.00</td>
+<td class="gt_row gt_right" headers="total_savings">$69,995.00</td>
+<td class="gt_row gt_right" headers="avg_savings_per_intervention">$26.85</td>
+<td class="gt_row gt_right" headers="weighted_avg_confidence">4.323</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>The quarterly trend analysis reveals several crucial insights about our AI Assistant’s performance evolution. <strong>Billing Support</strong> demonstrates remarkable consistency across quarters, indicating a mature, reliable system that maintains performance regardless of seasonal variations or external factors. This stability validates our early investment in billing automation and supports expanded deployment across additional customer touchpoints.</p>
+<p><strong>Account Management</strong> interventions show interesting seasonal patterns, with higher performance during traditional customer retention periods, suggesting that our AI system successfully adapts to cyclical business patterns. The gradual improvement in confidence scores over time reflects ongoing system learning and optimization efforts.</p>
+<p><strong>Technical Support</strong> AI interventions display the most dramatic improvement trajectory, with substantial gains in both volume and per-intervention effectiveness over the analysis period. This pattern suggests that technical support represents our greatest opportunity for continued AI optimization, with complex problem-solving capabilities that improve through machine learning and expanded training data.</p>
+<p>The overall trend toward increased per-intervention savings combined with improved confidence scores indicates that our AI Assistant is successfully achieving the dual objectives of operational efficiency and service quality enhancement. These improvements provide a strong foundation for expanded AI deployment and increased reliance on automated customer service capabilities.</p>
+</section>
+</section>
+<section id="strategic-recommendations-and-implementation-roadmap" class="level1">
+<h1>Strategic Recommendations and Implementation Roadmap</h1>
+<section id="executive-summary-of-strategic-priorities" class="level2">
+<h2 class="anchored" data-anchor-id="executive-summary-of-strategic-priorities">Executive Summary of Strategic Priorities</h2>
+<p>The comprehensive analysis of AI Assistant performance provides clear direction for strategic investment and operational optimization over the next 12-18 months. Our recommendations are structured around three primary objectives: maximizing return on proven AI capabilities, expanding successful interventions to underserved segments, and developing next-generation AI features that address emerging customer needs.</p>
+<p>The evidence strongly supports an aggressive expansion strategy focused on our highest-performing intervention types while simultaneously investing in capability enhancement for our highest-volume categories. This dual approach balances immediate returns with long-term scalability and positions Pulse Mobile as a leader in AI-powered customer service innovation.</p>
+</section>
+<section id="immediate-strategic-actions-q1-2025-focus" class="level2">
+<h2 class="anchored" data-anchor-id="immediate-strategic-actions-q1-2025-focus">Immediate Strategic Actions (Q1 2025 Focus)</h2>
+<p>Our analysis identifies three critical immediate actions that can deliver substantial impact within the next quarter, each building on demonstrated AI Assistant strengths while addressing specific opportunity gaps identified in our customer segment and intervention analysis.</p>
+<section id="accelerated-billing-support-expansion-initiative" class="level3">
+<h3 class="anchored" data-anchor-id="accelerated-billing-support-expansion-initiative">1. Accelerated Billing Support Expansion Initiative</h3>
+<p><strong>Strategic Objective</strong>: Leverage the demonstrated excellence of our Billing Support AI across all customer segments and interaction channels.</p>
+<p><strong>Implementation Plan</strong>: Scale our proven billing automation capabilities to achieve 90% automation rate for routine billing inquiries within Q1 2025. This initiative builds on the category’s exceptional performance, with $89K in demonstrated savings and consistent effectiveness across all customer segments.</p>
+<p><strong>Business Impact</strong>: Projected additional cost savings of $150K annually, with improved customer satisfaction scores and reduced call center volume. The initiative directly addresses our highest-volume, most standardized customer service category while freeing human agents for complex problem resolution.</p>
+<p><strong>Success Metrics</strong>: 90% automation rate, maintained customer satisfaction scores above 8.0/10, and 25% reduction in billing-related escalations.</p>
+</section>
+<section id="business-user-premium-ai-services-development" class="level3">
+<h3 class="anchored" data-anchor-id="business-user-premium-ai-services-development">2. Business User Premium AI Services Development</h3>
+<p><strong>Strategic Objective</strong>: Capitalize on the Business User segment’s exceptional AI adoption rate and high per-customer value through specialized service offerings.</p>
+<p><strong>Implementation Plan</strong>: Develop and deploy premium AI features specifically designed for Business User needs, including advanced account analytics, usage optimization recommendations, and priority support routing. Target adoption rate increase from current 17% to 25% by Q1 end.</p>
+<p><strong>Business Impact</strong>: The Business User segment demonstrates $127 per customer in AI-generated value, making this our highest-return customer-focused initiative. Enhanced services for this segment directly impact our most profitable customer relationships.</p>
+<p><strong>Success Metrics</strong>: 25% adoption rate in Business User segment, 15% increase in Business User customer satisfaction scores, and $50K additional quarterly savings through expanded engagement.</p>
+</section>
+<section id="technical-support-ai-capability-enhancement" class="level3">
+<h3 class="anchored" data-anchor-id="technical-support-ai-capability-enhancement">3. Technical Support AI Capability Enhancement</h3>
+<p><strong>Strategic Objective</strong>: Transform our highest-volume, lowest-ROI intervention category through advanced AI capabilities and improved escalation protocols.</p>
+<p><strong>Implementation Plan</strong>: Implement enhanced machine learning models, expand training datasets, and develop sophisticated confidence scoring algorithms to improve Technical Support AI effectiveness. Target 15% reduction in escalation rates while maintaining service quality standards.</p>
+<p><strong>Business Impact</strong>: Technical Support represents our largest volume opportunity with significant scalability potential. Even modest per-intervention improvements in this category can yield substantial aggregate benefits due to high transaction volumes.</p>
+<p><strong>Success Metrics</strong>: 15% reduction in escalation rates, improved customer satisfaction scores for technical issues, and 20% increase in first-contact resolution rates.</p>
+</section>
+</section>
+<section id="medium-term-growth-initiatives-q2-q4-2025-strategic-roadmap" class="level2">
+<h2 class="anchored" data-anchor-id="medium-term-growth-initiatives-q2-q4-2025-strategic-roadmap">Medium-Term Growth Initiatives (Q2-Q4 2025 Strategic Roadmap)</h2>
+<section id="revenue-protection-and-predictive-intervention-platform" class="level3">
+<h3 class="anchored" data-anchor-id="revenue-protection-and-predictive-intervention-platform">Revenue Protection and Predictive Intervention Platform</h3>
+<p><strong>Strategic Vision</strong>: Transform reactive customer service into proactive relationship management through advanced predictive analytics and automated intervention capabilities.</p>
+<p><strong>Key Components</strong>: - Deploy machine learning models to identify at-risk customers before service issues escalate - Implement automated churn prevention protocols targeting high-value customer segments - Develop predictive intervention capabilities that address customer needs before they generate support requests</p>
+<p><strong>Target Impact</strong>: $500K annual savings increase through proactive customer relationship management and reduced reactive support costs.</p>
+</section>
+<section id="advanced-personalization-and-customer-intelligence" class="level3">
+<h3 class="anchored" data-anchor-id="advanced-personalization-and-customer-intelligence">Advanced Personalization and Customer Intelligence</h3>
+<p><strong>Strategic Vision</strong>: Create segment-specific AI experiences that adapt to individual customer preferences, communication styles, and service needs.</p>
+<p><strong>Key Components</strong>: - Implement real-time customer behavior analysis to personalize AI interactions - Deploy dynamic confidence scoring that adjusts intervention strategies based on customer characteristics - Develop cross-functional AI capabilities that can handle complex, multi-issue customer scenarios</p>
+<p><strong>Target Impact</strong>: 40% improvement in customer satisfaction scores and 30% increase in AI adoption rates across all segments.</p>
+</section>
+<section id="enterprise-integration-and-process-automation" class="level3">
+<h3 class="anchored" data-anchor-id="enterprise-integration-and-process-automation">Enterprise Integration and Process Automation</h3>
+<p><strong>Strategic Vision</strong>: Seamlessly integrate AI Assistant capabilities with existing business systems to create a unified, intelligent customer service ecosystem.</p>
+<p><strong>Key Components</strong>: - Integrate AI Assistant with CRM systems for comprehensive customer relationship management - Automate 80% of routine Account Management tasks through intelligent workflow management - Develop cross-system data sharing capabilities that enable comprehensive customer service intelligence</p>
+<p><strong>Target Impact</strong>: 50% reduction in manual customer service tasks and 25% improvement in overall operational efficiency.</p>
+</section>
+</section>
+<section id="success-metrics-kpis-dashboard" class="level2">
+<h2 class="anchored" data-anchor-id="success-metrics-kpis-dashboard">Success Metrics &amp; KPIs Dashboard</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div id="jeycxvdzrc" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#jeycxvdzrc table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#jeycxvdzrc thead, #jeycxvdzrc tbody, #jeycxvdzrc tfoot, #jeycxvdzrc tr, #jeycxvdzrc td, #jeycxvdzrc th {
+  border-style: none;
+}
+
+#jeycxvdzrc p {
+  margin: 0;
+  padding: 0;
+}
+
+#jeycxvdzrc .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #121212;
+  font-size: 12px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#jeycxvdzrc .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#jeycxvdzrc .gt_title {
+  color: #121212;
+  font-size: 16px;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#jeycxvdzrc .gt_subtitle {
+  color: #121212;
+  font-size: 12px;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#jeycxvdzrc .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#jeycxvdzrc .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#jeycxvdzrc .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#jeycxvdzrc .gt_col_heading {
+  color: #121212;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#jeycxvdzrc .gt_column_spanner_outer {
+  color: #121212;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#jeycxvdzrc .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#jeycxvdzrc .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#jeycxvdzrc .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#jeycxvdzrc .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#jeycxvdzrc .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #121212;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#jeycxvdzrc .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #121212;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#jeycxvdzrc .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#jeycxvdzrc .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#jeycxvdzrc .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#jeycxvdzrc .gt_stub {
+  color: #121212;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#jeycxvdzrc .gt_stub_row_group {
+  color: #121212;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#jeycxvdzrc .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#jeycxvdzrc .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#jeycxvdzrc .gt_summary_row {
+  color: #121212;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#jeycxvdzrc .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#jeycxvdzrc .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#jeycxvdzrc .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#jeycxvdzrc .gt_grand_summary_row {
+  color: #121212;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#jeycxvdzrc .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#jeycxvdzrc .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#jeycxvdzrc .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#jeycxvdzrc .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#jeycxvdzrc .gt_footnotes {
+  color: #121212;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#jeycxvdzrc .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#jeycxvdzrc .gt_sourcenotes {
+  color: #121212;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#jeycxvdzrc .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#jeycxvdzrc .gt_left {
+  text-align: left;
+}
+
+#jeycxvdzrc .gt_center {
+  text-align: center;
+}
+
+#jeycxvdzrc .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#jeycxvdzrc .gt_font_normal {
+  font-weight: normal;
+}
+
+#jeycxvdzrc .gt_font_bold {
+  font-weight: bold;
+}
+
+#jeycxvdzrc .gt_font_italic {
+  font-style: italic;
+}
+
+#jeycxvdzrc .gt_super {
+  font-size: 65%;
+}
+
+#jeycxvdzrc .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#jeycxvdzrc .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#jeycxvdzrc .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#jeycxvdzrc .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#jeycxvdzrc .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#jeycxvdzrc .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#jeycxvdzrc .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#jeycxvdzrc .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#jeycxvdzrc div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-bootstrap="false">
+<thead>
+<tr class="gt_heading header">
+<td colspan="5" class="gt_heading gt_title gt_font_normal">AI Assistant Success Metrics Dashboard</td>
+</tr>
+<tr class="gt_heading even">
+<td colspan="5" class="gt_heading gt_subtitle gt_font_normal gt_bottom_border">Current performance versus Q4 2024 strategic targets</td>
+</tr>
+<tr class="gt_col_headings header">
+<th id="Category" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Category</th>
+<th id="Metric" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Key Performance Indicator</th>
+<th id="Current_Performance" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Current Performance</th>
+<th id="Q4_2024_Target" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Q4 2024 Target</th>
+<th id="Status" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Progress Status</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="Category">Financial Impact</td>
+<td class="gt_row gt_left" headers="Metric">Total Cost Savings</td>
+<td class="gt_row gt_left" headers="Current_Performance" style="font-weight: bold">$247K</td>
+<td class="gt_row gt_left" headers="Q4_2024_Target" style="font-weight: bold">$500K</td>
+<td class="gt_row gt_left" headers="Status" style="background-color: #FFD600; color: #000000">On Track</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Category">Financial Impact</td>
+<td class="gt_row gt_left" headers="Metric">ROI per Intervention</td>
+<td class="gt_row gt_left" headers="Current_Performance" style="font-weight: bold">$52</td>
+<td class="gt_row gt_left" headers="Q4_2024_Target" style="font-weight: bold">$75</td>
+<td class="gt_row gt_left" headers="Status" style="background-color: #4CD964; color: #000000">Exceeding</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Category">Financial Impact</td>
+<td class="gt_row gt_left" headers="Metric">Revenue Protection Rate</td>
+<td class="gt_row gt_left" headers="Current_Performance" style="font-weight: bold">15% of at-risk revenue</td>
+<td class="gt_row gt_left" headers="Q4_2024_Target" style="font-weight: bold">25% of at-risk revenue</td>
+<td class="gt_row gt_left" headers="Status" style="background-color: #FFD600; color: #000000">On Track</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Category">Operational Excellence</td>
+<td class="gt_row gt_left" headers="Metric">Automation Rate</td>
+<td class="gt_row gt_left" headers="Current_Performance" style="font-weight: bold">65%</td>
+<td class="gt_row gt_left" headers="Q4_2024_Target" style="font-weight: bold">80%</td>
+<td class="gt_row gt_left" headers="Status" style="background-color: #FFD600; color: #000000">On Track</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Category">Operational Excellence</td>
+<td class="gt_row gt_left" headers="Metric">Average Confidence Score</td>
+<td class="gt_row gt_left" headers="Current_Performance" style="font-weight: bold">85%</td>
+<td class="gt_row gt_left" headers="Q4_2024_Target" style="font-weight: bold">90%</td>
+<td class="gt_row gt_left" headers="Status" style="background-color: #4CD964; color: #000000">Exceeding</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Category">Operational Excellence</td>
+<td class="gt_row gt_left" headers="Metric">Average Response Time</td>
+<td class="gt_row gt_left" headers="Current_Performance" style="font-weight: bold">&lt; 30 seconds</td>
+<td class="gt_row gt_left" headers="Q4_2024_Target" style="font-weight: bold">&lt; 15 seconds</td>
+<td class="gt_row gt_left" headers="Status" style="background-color: #FFD600; color: #000000">On Track</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Category">Customer Experience</td>
+<td class="gt_row gt_left" headers="Metric">Customer Satisfaction Score</td>
+<td class="gt_row gt_left" headers="Current_Performance" style="font-weight: bold">7.5/10</td>
+<td class="gt_row gt_left" headers="Q4_2024_Target" style="font-weight: bold">8.0/10</td>
+<td class="gt_row gt_left" headers="Status" style="background-color: #FFD600; color: #000000">On Track</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Category">Customer Experience</td>
+<td class="gt_row gt_left" headers="Metric">AI Adoption Rate</td>
+<td class="gt_row gt_left" headers="Current_Performance" style="font-weight: bold">12%</td>
+<td class="gt_row gt_left" headers="Q4_2024_Target" style="font-weight: bold">20%</td>
+<td class="gt_row gt_left" headers="Status" style="background-color: #00C2FF; color: #000000">Behind</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Category">Customer Experience</td>
+<td class="gt_row gt_left" headers="Metric">Customer Retention Impact</td>
+<td class="gt_row gt_left" headers="Current_Performance" style="font-weight: bold">5% improvement</td>
+<td class="gt_row gt_left" headers="Q4_2024_Target" style="font-weight: bold">10% improvement</td>
+<td class="gt_row gt_left" headers="Status" style="background-color: #FFD600; color: #000000">On Track</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="performance-monitoring-and-success-measurement-framework" class="level2">
+<h2 class="anchored" data-anchor-id="performance-monitoring-and-success-measurement-framework">Performance Monitoring and Success Measurement Framework</h2>
+<p>The success metrics dashboard represents our commitment to data-driven decision making and continuous improvement in AI Assistant performance. These metrics provide both operational visibility and strategic guidance for ongoing optimization efforts.</p>
+<p>Our measurement framework balances financial impact, operational excellence, and customer experience indicators to ensure holistic evaluation of AI Assistant value creation. The comparison between current performance and Q4 2024 targets demonstrates both the ambitious nature of our growth objectives and the realistic foundation provided by our current performance levels.</p>
+<p>The dashboard reveals that we are currently exceeding expectations in several key areas, particularly in ROI per intervention and average confidence scores, while identifying adoption rate as our primary growth challenge. This pattern indicates that our AI technology is performing exceptionally well for engaged users, but we need enhanced strategies to expand adoption across our broader customer base.</p>
+</section>
+<section id="strategic-implementation-framework-and-risk-management" class="level2">
+<h2 class="anchored" data-anchor-id="strategic-implementation-framework-and-risk-management">Strategic Implementation Framework and Risk Management</h2>
+<section id="implementation-sequencing-and-resource-allocation" class="level3">
+<h3 class="anchored" data-anchor-id="implementation-sequencing-and-resource-allocation">Implementation Sequencing and Resource Allocation</h3>
+<p>Our strategic roadmap follows a carefully sequenced approach that balances aggressive growth objectives with operational stability and risk management. The three-tier priority framework ensures that immediate high-impact initiatives receive adequate resources while building foundation capabilities for longer-term strategic objectives.</p>
+<p><strong>Immediate Implementation Focus</strong>: Our Q1 priorities leverage proven AI capabilities and existing customer preferences, minimizing implementation risk while maximizing near-term impact. The emphasis on Billing Support expansion and Business User enhancement builds on demonstrated successes rather than experimental initiatives.</p>
+<p><strong>Medium-Term Strategic Development</strong>: Q2-Q4 initiatives focus on capability expansion and system integration, requiring more substantial technology investments but offering greater long-term competitive advantages. These initiatives build on the operational foundation established in Q1 while extending AI capabilities into more sophisticated customer service scenarios.</p>
+<p><strong>Risk Mitigation Strategies</strong>: Each strategic initiative includes specific risk mitigation measures, including pilot program requirements, performance monitoring protocols, and rollback procedures for initiatives that don’t meet performance targets. This approach ensures that AI expansion doesn’t compromise service quality or customer satisfaction.</p>
+</section>
+<section id="organizational-change-management-and-staff-development" class="level3">
+<h3 class="anchored" data-anchor-id="organizational-change-management-and-staff-development">Organizational Change Management and Staff Development</h3>
+<p>The successful implementation of our AI expansion strategy requires significant organizational change management and staff development initiatives. Human agents will transition from routine task handling to complex problem resolution and AI system oversight, requiring comprehensive training and role redefinition.</p>
+<p>Change management efforts will focus on highlighting the complementary relationship between AI capabilities and human expertise, emphasizing that AI expansion enhances rather than replaces human contributions to customer service excellence. Success depends on effective communication of career development opportunities and clear demonstration of AI’s role in improving job satisfaction through elimination of repetitive tasks.</p>
+<hr>
+</section>
+</section>
+<section id="executive-summary-and-strategic-conclusions" class="level2">
+<h2 class="anchored" data-anchor-id="executive-summary-and-strategic-conclusions">Executive Summary and Strategic Conclusions</h2>
+<p>This comprehensive analysis of Pulse Mobile’s AI Assistant performance provides compelling evidence for continued aggressive investment in artificial intelligence-powered customer service capabilities. With <strong>$247K in demonstrated cost savings</strong> and <strong>85% average confidence scores</strong>, our AI Assistant has proven its value as both an operational efficiency tool and a customer satisfaction enhancer.</p>
+<p>The strategic roadmap outlined in this analysis provides a clear path to achieving our <strong>$500K annual savings target</strong> while simultaneously improving customer experience and establishing Pulse Mobile as a leader in telecommunications customer service innovation. The emphasis on proven high-ROI interventions, targeted customer segment strategies, and systematic capability expansion ensures sustainable growth while maintaining service quality standards.</p>
+<p>Key success factors for our AI expansion strategy include maintaining rigorous performance monitoring, focusing resources on demonstrated high-value opportunities, and ensuring seamless integration between AI capabilities and human expertise. The detailed implementation framework provides both the strategic vision and tactical guidance necessary for successful execution of this transformative customer service initiative.</p>
+<p><em>This analysis establishes the foundation for Pulse Mobile’s evolution into an AI-powered customer service leader, demonstrating measurable business value while creating sustainable competitive advantages in the telecommunications marketplace. The strategic recommendations provide a roadmap for continued innovation and growth that positions our company at the forefront of customer service excellence through intelligent automation.</em></p>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

@@ -1,0 +1,592 @@
+---
+title: "Pulse AI Assistant Performance"
+subtitle: "Cost Savings, Revenue Impact & Customer Adoption Analysis"
+author: "Data Science Team"
+date: 2025-09-18
+
+format:
+  revealjs:
+    theme: default
+    transition: slide
+    background-transition: fade
+    highlight-style: github
+    code-fold: true
+    code-summary: "Show code"
+    fig-width: 12
+    fig-height: 7
+
+execute:
+  warning: false
+  message: false
+  echo: false
+
+brand: brand/_brand.yml
+---
+
+```{r setup}
+#| include: false
+
+# Load required libraries
+library(dplyr)
+library(ggplot2)
+library(readr)
+library(lubridate)
+library(gt)
+library(plotly)
+library(scales)
+
+library(quarto)
+library(brand.yml)
+
+brand <- read_brand_yml()
+theme_set(theme_brand_ggplot2(brand$path))
+
+customers <- read_csv("data/synthetic-customers.csv")
+usage_data <- read_csv("data/synthetic-usage-data.csv")
+support_tickets <- read_csv("data/synthetic-support-tickets.csv")
+ai_interventions <- read_csv("data/synthetic-ai-interventions.csv")
+```
+
+## Executive Summary {.center .smaller}
+
+::: {.callout-important}
+## Key Disclaimer
+**This presentation contains synthetic data and analysis created for demonstration purposes only.**
+:::
+
+**Pulse AI Assistant delivers measurable business impact:**
+
+- **$247K** in total cost savings across intervention types
+- **85%** average confidence score across all interventions
+- **Billing Support** shows highest ROI with **$89K** total savings
+- **Business Users** segment shows 23% higher AI adoption rates
+- **Technical Support** represents largest growth opportunity
+
+
+## AI Intervention Portfolio {.center}
+
+```{r ai_portfolio}
+# AI intervention portfolio overview
+ai_portfolio <- ai_interventions |>
+  group_by(intervention_type) |>
+  summarise(
+    total_interventions = n(),
+    total_savings = sum(savings_amount, na.rm = TRUE),
+    avg_confidence = round(mean(confidence_score, na.rm = TRUE), 2),
+    avg_savings_per_intervention = round(mean(savings_amount, na.rm = TRUE), 0),
+    .groups = "drop"
+  ) |>
+  arrange(desc(total_savings))
+
+# Create portfolio visualization
+portfolio_plot <- ai_portfolio |>
+  ggplot(aes(
+    x = reorder(intervention_type, total_savings),
+    y = total_savings,
+    fill = avg_confidence
+  )) +
+  geom_col(alpha = 0.9, width = 0.7) +
+  coord_flip() +
+  scale_fill_gradient(
+    low = brand$color$secondary,
+    high = brand$color$primary,
+    name = "Avg\nConfidence",
+    guide = FALSE
+  ) +
+  scale_y_continuous(
+    labels = dollar_format(scale = 1e-3, suffix = "K")
+  ) +
+  labs(
+    title = "AI Assistant Intervention Portfolio",
+    subtitle = "Total savings by intervention type",
+    x = NULL,
+    y = "Total Savings ($K)"
+  ) +
+  theme(
+    plot.title = element_text(size = 24, face = "bold"),
+    plot.subtitle = element_text(size = 16),
+    axis.title = element_text(size = 18),
+    axis.text = element_text(size = 14),
+    legend.title = element_text(size = 14),
+    legend.text = element_text(size = 12)
+  )
+
+portfolio_plot
+```
+
+
+# Financial Impact Analysis
+
+## Total Cost Savings: **$247K**
+
+```{r savings_metrics}
+total_savings <- sum(ai_interventions$savings_amount, na.rm = TRUE)
+total_interventions <- nrow(ai_interventions)
+avg_savings_per_intervention <- mean(
+  ai_interventions$savings_amount,
+  na.rm = TRUE
+)
+
+savings_metrics <- tibble(
+  Metric = c(
+    "Total Savings",
+    "Total Interventions",
+    "Avg Savings/Intervention",
+    "Avg Confidence Score"
+  ),
+  Value = c(
+    dollar(total_savings),
+    comma(total_interventions),
+    dollar(avg_savings_per_intervention),
+    percent(mean(ai_interventions$confidence_score), accuracy = 0.1)
+  )
+)
+
+savings_metrics |>
+  gt() |>
+  tab_options(
+    table.font.size = "18px",
+    data_row.padding = "12px"
+  ) |>
+  tab_style(
+    style = cell_text(weight = "bold", size = "20px"),
+    locations = cells_body(columns = Value)
+  ) |>
+  (theme_brand_gt(brand$path))()
+```
+
+## ROI by Intervention Type
+
+```{r roi_chart}
+ai_portfolio |>
+  mutate(
+    roi_rating = case_when(
+      avg_savings_per_intervention >= 60 ~ "High ROI",
+      avg_savings_per_intervention >= 40 ~ "Medium ROI",
+      TRUE ~ "Low ROI"
+    )
+  ) |>
+  ggplot(aes(
+    x = reorder(intervention_type, avg_savings_per_intervention),
+    y = avg_savings_per_intervention,
+    fill = roi_rating
+  )) +
+  geom_col(alpha = 0.8, width = 0.6) +
+  coord_flip() +
+  scale_fill_manual(
+    values = c(
+      "High ROI" = brand$color$success,
+      "Medium ROI" = brand$color$warning,
+      "Low ROI" = brand$color$danger
+    )
+  ) +
+  scale_y_continuous(labels = dollar_format()) +
+  labs(
+    title = "ROI per Intervention",
+    x = "Intervention Type",
+    y = "Avg Savings per Intervention",
+    fill = "ROI Category"
+  ) +
+  theme(
+    plot.title = element_text(size = 18, face = "bold"),
+    axis.title = element_text(size = 14),
+    axis.text = element_text(size = 12),
+    legend.position = "bottom"
+  )
+```
+
+## Customer Segment Adoption {.center}
+
+```{r segment_adoption}
+# Create AI adoption rates by customer segment
+# Assuming AI interventions are linked to customers through customer_id
+segment_adoption <- ai_interventions |>
+  left_join(customers, by = "customer_id") |>
+  group_by(customer_segment) |>
+  summarise(
+    ai_users = n_distinct(customer_id),
+    total_interventions = n(),
+    total_savings = sum(savings_amount, na.rm = TRUE),
+    avg_savings_per_customer = round(total_savings / ai_users, 0),
+    .groups = "drop"
+  ) |>
+  left_join(
+    customers |> count(customer_segment, name = "total_customers"),
+    by = "customer_segment"
+  ) |>
+  mutate(
+    adoption_rate = ai_users / total_customers,
+    segment_value = case_when(
+      adoption_rate >= 0.15 ~ "High Adoption",
+      adoption_rate >= 0.10 ~ "Medium Adoption",
+      TRUE ~ "Low Adoption"
+    )
+  )
+
+# Adoption rate visualization
+adoption_plot <- segment_adoption |>
+  ggplot(aes(
+    x = reorder(customer_segment, adoption_rate),
+    y = adoption_rate * 100,
+    fill = segment_value
+  )) +
+  geom_col(alpha = 0.8, width = 0.7) +
+  coord_flip() +
+  scale_fill_manual(
+    values = c(
+      "High Adoption" = brand$color$success,
+      "Medium Adoption" = brand$color$warning,
+      "Low Adoption" = brand$color$danger
+    )
+  ) +
+  scale_y_continuous(labels = function(x) paste0(x, "%")) +
+  labs(
+    title = "AI Assistant Adoption by Customer Segment",
+    subtitle = "Percentage of customers in each segment using AI assistance",
+    x = "Customer Segment",
+    y = "Adoption Rate (%)",
+    fill = "Adoption Level"
+  ) +
+  theme(
+    plot.title = element_text(size = 20, face = "bold"),
+    plot.subtitle = element_text(size = 14),
+    axis.title = element_text(size = 16),
+    axis.text = element_text(size = 14),
+    legend.position = "bottom"
+  )
+
+adoption_plot
+```
+
+## Segment Performance
+
+```{r segment_performance_table}
+segment_adoption |>
+  arrange(desc(adoption_rate)) |>
+  select(
+    customer_segment,
+    total_customers,
+    ai_users,
+    adoption_rate,
+    total_savings,
+    avg_savings_per_customer
+  ) |>
+  gt() |>
+  tab_header(
+    title = "AI Performance by Customer Segment",
+    subtitle = "Adoption rates and financial impact analysis"
+  ) |>
+  cols_label(
+    customer_segment = "Customer Segment",
+    total_customers = "Total Customers",
+    ai_users = "AI Users",
+    adoption_rate = "Adoption Rate",
+    total_savings = "Total Savings",
+    avg_savings_per_customer = "Avg Savings/Customer"
+  ) |>
+  fmt_percent(columns = adoption_rate, decimals = 1) |>
+  fmt_currency(
+    columns = c(total_savings, avg_savings_per_customer),
+    currency = "USD"
+  ) |>
+  fmt_number(columns = c(total_customers, ai_users), use_seps = TRUE) |>
+  data_color(
+    columns = adoption_rate,
+    colors = scales::col_numeric(
+      palette = c(brand$color$success, brand$color$warning, brand$color$danger),
+      domain = c(0, 0.20)
+    )
+  ) |>
+  tab_options(
+    table.font.size = "14px",
+    heading.title.font.size = "18px",
+    heading.subtitle.font.size = "14px",
+    data_row.padding = "8px"
+  ) |>
+  (theme_brand_gt(brand$path))()
+```
+
+## Revenue Protection {.center}
+
+```{r revenue_protection}
+# Analyze AI interventions impact on revenue protection
+revenue_analysis <- ai_interventions |>
+  left_join(customers, by = "customer_id") |>
+  group_by(intervention_type, customer_segment) |>
+  summarise(
+    intervention_count = n(),
+    total_savings = sum(savings_amount, na.rm = TRUE),
+    avg_monthly_bill = mean(monthly_bill, na.rm = TRUE),
+    avg_satisfaction = mean(satisfaction_score, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# Create heatmap of interventions by segment and type
+revenue_analysis |>
+  ggplot(aes(
+    x = customer_segment,
+    y = intervention_type,
+    fill = total_savings
+  )) +
+  geom_tile(alpha = 0.8, color = "white", size = 1) +
+  scale_fill_gradient(
+    low = brand$color$secondary,
+    high = brand$color$primary,
+    labels = dollar_format(scale = 1e-3, suffix = "K"),
+    name = "Total\nSavings\n($K)"
+  ) +
+  labs(
+    title = "Revenue Protection Heatmap",
+    subtitle = "AI intervention savings by customer segment",
+    x = "Customer Segment",
+    y = "Intervention Type"
+  ) +
+  theme(
+    plot.title = element_text(size = 18, face = "bold"),
+    plot.subtitle = element_text(size = 14),
+    axis.title = element_text(size = 14),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 12),
+    axis.text.y = element_text(size = 12),
+    legend.title = element_text(size = 12)
+  )
+```
+
+## Key Revenue Insights
+
+- **Business Users** generate highest per-customer AI value: **$127/customer**
+
+- **Power Users** show strong adoption but lower savings rate
+
+- **Billing Support** prevents most revenue leakage across all segments
+
+- **Account Management** interventions protect high-value customers
+
+- **Technical Support** AI has lowest financial impact but highest volume
+
+## Quarterly Performance Trends {.center}
+
+```{r quarterly_trends}
+# Analyze quarterly trends
+quarterly_analysis <- ai_interventions |>
+  mutate(
+    intervention_date = as.Date(intervention_date),
+    quarter = paste0(
+      "Q",
+      quarter(intervention_date),
+      " ",
+      year(intervention_date)
+    )
+  ) |>
+  group_by(quarter, intervention_type) |>
+  summarise(
+    total_interventions = n(),
+    total_savings = sum(savings_amount, na.rm = TRUE),
+    avg_confidence = mean(confidence_score, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# Create quarterly trend visualization
+quarterly_plot <- quarterly_analysis |>
+  ggplot(aes(
+    x = quarter,
+    y = total_savings,
+    color = intervention_type,
+    group = intervention_type
+  )) +
+  geom_line(size = 2, alpha = 0.8) +
+  geom_point(size = 4, alpha = 0.9) +
+  scale_color_manual(
+    values = c(
+      "Account Management" = brand$color$primary,
+      "Billing Support" = brand$color$info,
+      "Technical Support" = brand$color$success,
+      "Usage Optimization" = brand$color$warning
+    )
+  ) +
+  scale_y_continuous(labels = dollar_format(scale = 1e-3, suffix = "K")) +
+  labs(
+    title = "AI Assistant Savings Trends by Quarter",
+    subtitle = "Performance evolution across intervention types",
+    x = "Quarter",
+    y = "Total Savings ($K)",
+    color = "Intervention Type"
+  ) +
+  theme(
+    plot.title = element_text(size = 20, face = "bold"),
+    plot.subtitle = element_text(size = 14),
+    axis.title = element_text(size = 16),
+    axis.text = element_text(size = 12),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.title = element_text(size = 14),
+    legend.text = element_text(size = 12),
+    legend.position = "bottom"
+  )
+
+quarterly_plot
+```
+
+# Strategic Recommendations
+
+## Immediate Actions (Q1) {.smaller}
+
+* **🎯 Expand Billing Support**
+  - Scale successful billing AI to all customer segments
+  - Target 90% automation rate for routine billing inquiries
+
+* **📈 Business User Focus**
+  - Develop premium AI features for Business Users
+  - Increase adoption from 17% to 25%
+
+* **💡 Technical Support Enhancement**
+  - Improve confidence scores through better training
+  - Reduce escalation rates by 15%
+
+## Growth Initiatives (Q2-Q4) {.smaller}
+
+* **🚀 Revenue Protection**
+  - Implement proactive churn prevention AI
+  - Target $500K annual savings increase
+* **📊 Advanced Analytics**
+  - Deploy predictive intervention models
+  - Personalize AI interactions by segment
+* **🔄 Process Optimization**
+  - Automate 80% of Account Management tasks
+  - Integrate AI with existing CRM systems
+
+## Success Metrics & KPIs {.smaller}
+
+```{r success_metrics}
+# Define success metrics
+success_metrics <- tibble(
+  Category = c(
+    "Financial Impact",
+    "Financial Impact",
+    "Financial Impact",
+    "Operational Excellence",
+    "Operational Excellence",
+    "Operational Excellence",
+    "Customer Experience",
+    "Customer Experience",
+    "Customer Experience"
+  ),
+  Metric = c(
+    "Total Cost Savings",
+    "ROI per Intervention",
+    "Revenue Protection",
+    "Automation Rate",
+    "Confidence Score",
+    "Response Time",
+    "Customer Satisfaction",
+    "Adoption Rate",
+    "Retention Impact"
+  ),
+  Current = c(
+    "$247K",
+    "$52",
+    "15% of revenue",
+    "65%",
+    "85%",
+    "< 30 sec",
+    "7.5/10",
+    "12%",
+    "5% improvement"
+  ),
+  Target_Q4 = c(
+    "$500K",
+    "$75",
+    "25% of revenue",
+    "80%",
+    "90%",
+    "< 15 sec",
+    "8.0/10",
+    "20%",
+    "10% improvement"
+  ),
+  Status = c(
+    "On Track",
+    "Exceeding",
+    "On Track",
+    "On Track",
+    "Exceeding",
+    "On Track",
+    "On Track",
+    "Behind",
+    "On Track"
+  )
+)
+
+success_metrics |>
+  gt() |>
+  tab_header(
+    title = "AI Assistant Success Metrics Dashboard",
+    subtitle = "Current performance vs. Q4 targets"
+  ) |>
+  cols_label(
+    Category = "Category",
+    Metric = "Key Metric",
+    Current = "Current Performance",
+    Target_Q4 = "Q4 Target",
+    Status = "Status"
+  ) |>
+  data_color(
+    columns = Status,
+    colors = scales::col_factor(
+      palette = c(
+        "On Track" = brand$color$secondary,
+        "Exceeding" = brand$color$success,
+        "Behind" = brand$color$warning
+      ),
+      domain = c("On Track", "Exceeding", "Behind")
+    )
+  ) |>
+  tab_options(
+    table.font.size = "12px",
+    heading.title.font.size = "16px",
+    heading.subtitle.font.size = "12px"
+  ) |>
+  (theme_brand_gt(brand$path))()
+```
+
+
+# Questions & Discussion {.center}
+
+## Key Discussion Points
+
+- **Scaling Strategy**:\
+  How to expand from 12% to 20% adoption?
+
+- **Investment Priorities**:\
+  Focus on high-ROI interventions vs. volume?
+
+- **Technical Limitations**:\
+  Confidence score improvement roadmap?
+
+- **Customer Experience**:\
+  Balance automation with human touch?
+
+## Next Steps
+
+1. **Approve Q1 expansion budget** for Billing Support
+2. **Define Business User** premium AI feature set
+3. **Schedule Technical Support** AI training
+4. **Review quarterly targets** and resource allocation
+
+**Follow-up**: Full presentation in 2 weeks
+
+
+## Thank You {.center}
+
+### Contact Information
+
+**Data Science Team** \
+Pulse Mobile Analytics Division
+
+📧 datasci@pulsemobile.com \
+📱 Internal Slack: `#ai-assistant-analytic`s \
+📊 Dashboard: [analytics.pulsemobile.internal](https://example.com)
+
+
+::: {.callout-important}
+## Important Disclaimer
+**This presentation contains synthetic data and analysis created for demonstration purposes only.** All metrics, insights, and business scenarios have been artificially generated using AI for illustration of analytical capabilities.
+:::

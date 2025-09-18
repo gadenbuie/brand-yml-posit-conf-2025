@@ -788,6 +788,8 @@ bslib.shinyapps.io/brand-yml
 
 ## {background-image="images/pulse-back-to-work.png" background-size="cover" background-transition="fade" transition-speed="slow"}
 
+## {background-image="images/report-unbranded.png" background-size="cover" background-transition="fade" transition-speed="slow"}
+
 ## {background-image="images/pulse-deflated.png" background-size="cover" background-transition="fade" transition-speed="slow"}
 
 ## Quarto: HTML
@@ -811,8 +813,6 @@ meta:
   name: Pulse Mobile
 ```
 :::
-
-## {background-image="images/report-unbranded.png" background-size="cover" background-transition="fade" transition-speed="slow"}
 
 ## {background-video="images/report-branded.webm"}
 
